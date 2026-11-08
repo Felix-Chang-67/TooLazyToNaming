@@ -9,6 +9,7 @@ import { parseLrc, DIRECTION } from './lyrics.mjs';
 
 export const DISCLAIMER = '歌词与翻译为个人听译，可能有误，欢迎捉虫～';
 const TITLE = 'KEDAMONO_AYAKASHI';
+export const ARTIST = 'ヒトリエ';
 const TAU = Math.PI * 2;
 
 const STYLE = {
@@ -691,6 +692,7 @@ export class Renderer {
         const fly = ez(E.inC, (t - 3.25) / 0.55);
         const size = lerp(1060, 860, ez(E.outX, (t - 0.05) / 1.6)) * (1 + fly * 2.6) * (1 + 0.012 * au.pulse(t, 8));
         this.card(s, t, size, { img: this.cv.img, rot: noise1(t * 0.6, 3) * 0.015, alpha: 1 - fly });
+        this.introCredits(s, t);
         break;
       }
       case 'verse1': {
@@ -986,8 +988,44 @@ export class Renderer {
 
   endText(s, t, sec) {
     const a = smooth(sec.t0 + 0.5, sec.t0 + 1.2, t);
-    text(s, 'KEDAMONO_AYAKASHI', W / 2, 890, 'AntonioBold', 44, '#ffffff', { align: 'center', alpha: a, tracking: 14 });
-    text(s, 'LYRIC VIDEO', W / 2, 940, 'Mono', 20, COL.redHot, { align: 'center', alpha: a * 0.9, tracking: 10 });
+    text(s, ARTIST, W / 2, 868, 'KakuBlack', 38, '#ffffff', { align: 'center', alpha: a, tracking: 12 });
+    text(s, TITLE, W / 2, 922, 'AntonioBold', 44, '#ffffff', { align: 'center', alpha: a, tracking: 14 });
+    text(s, 'LYRIC VIDEO', W / 2, 968, 'Mono', 20, COL.redHot, { align: 'center', alpha: a * 0.9, tracking: 10 });
+  }
+
+  /** intro: the artist name (vertical, left) and song title (rotated, right) flank the album art */
+  introCredits(s, t) {
+    const a = ez(E.outC, (t - 0.3) / 0.5) * (1 - ez(E.inC, (t - 3.15) / 0.45));
+    if (a <= 0) return;
+    const slide = (1 - ez(E.outX, (t - 0.3) / 0.7)) * 140;
+    const chars = [...ARTIST];
+    const lh = 116;
+    const y0 = H / 2 - ((chars.length - 1) * lh) / 2;
+    s.save();
+    s.globalAlpha = a;
+    s.textAlign = 'center';
+    s.textBaseline = 'middle';
+    s.shadowColor = 'rgba(0,0,0,0.9)';
+    s.shadowBlur = 20;
+    s.font = '100px KakuBlack';
+    s.fillStyle = COL.white;
+    chars.forEach((ch, i) => {
+      const k = Math.floor(t * 24);
+      const settle = t > 0.3 + 0.12 * i + 0.25;
+      s.fillText(settle ? ch : scrambleFor('KakuBlack', 'ic', i, k), 238 - slide, y0 + i * lh);
+    });
+    s.shadowBlur = 0;
+    s.fillStyle = COL.redHot;
+    s.fillRect(238 - slide + 78, y0 - 56, 5, (chars.length - 1) * lh + 112);
+    s.translate(W - 238 + slide, H / 2);
+    s.rotate(Math.PI / 2);
+    s.font = '66px AntonioBold';
+    s.letterSpacing = '12px';
+    s.fillStyle = COL.white;
+    s.shadowColor = 'rgba(0,0,0,0.9)';
+    s.shadowBlur = 20;
+    s.fillText(TITLE, 0, 0);
+    s.restore();
   }
 
   grid(s, t) {
@@ -1873,7 +1911,15 @@ export class Renderer {
     o.fillStyle = COL.redHot;
     o.fillRect(64, 52, 14, 14);
     o.restore();
-    text(o, TITLE, 92, 60, 'AntonioBold', 26, ink, { alpha: a, tracking: 4 });
+    o.font = '24px KakuBlack';
+    const aw = o.measureText(ARTIST).width;
+    text(o, ARTIST, 92, 60, 'KakuBlack', 24, ink, { alpha: a });
+    o.save();
+    o.globalAlpha = a;
+    o.fillStyle = COL.redHot;
+    o.fillRect(92 + aw + 14, 49, 2, 22);
+    o.restore();
+    text(o, TITLE, 92 + aw + 30, 60, 'AntonioBold', 26, ink, { alpha: a, tracking: 4 });
     // section label (decodes when it changes)
     const since = t - sec.t0;
     const label = `${String(sec.n).padStart(2, '0')} / ${sec.label}`;

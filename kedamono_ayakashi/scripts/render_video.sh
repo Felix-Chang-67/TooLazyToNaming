@@ -41,7 +41,7 @@ fi
 ffmpeg -y -loglevel error \
   -f concat -safe 0 -i build/segments.txt -i "$WAV" \
   -map 0:v:0 -map 1:a:0 -c:v copy -c:a copy \
-  -metadata title="KEDAMONO_AYAKASHI (Lyric Video)" \
+  -metadata title="KEDAMONO_AYAKASHI (Lyric Video)" -metadata artist="ヒトリエ" \
   -movflags +faststart "$OUT"
 
 ffprobe -v error -show_entries stream=index,codec_name,width,height,r_frame_rate,sample_rate,sample_fmt,bits_per_raw_sample,channels:format=duration,size,bit_rate -of default=nw=1 "$OUT"

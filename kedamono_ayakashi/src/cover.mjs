@@ -89,12 +89,19 @@ const fit = (str, font, size) => {
   if (L.width > maxW) L = layout(s, str, font, Math.floor((size * maxW) / L.width), { tracking: 0.02 });
   return L;
 };
-// the only large text is the song title; the block is centred on the album art (y = 470)
+// artist line + the song title (the only large text); the block is centred on the album art (y = 470)
 shadow(true);
 const l1 = fit('KEDAMONO', 'AntonioBold', 196);
 const l2 = fit('_AYAKASHI', 'AntonioBold', 196);
-const y1 = 330;
+const ya = 232;
+const y1 = ya + 128;
 const y2 = y1 + l1.size * 0.98;
+const artist = layout(s, 'ヒトリエ', 'KakuBlack', 62, { tracking: 0.12 });
+drawGlyphs(s, artist, tx + 6, ya, { align: 'left', fill: COL.white });
+shadow(false);
+s.fillStyle = COL.redHot;
+s.fillRect(tx + 6 + artist.width + 26, ya - 3, 120, 6);
+shadow(true);
 drawGlyphs(s, l1, tx, y1, { align: 'left', fill: COL.white });
 drawGlyphs(s, l2, tx, y2, { align: 'left', fill: COL.redHot });
 shadow(false);

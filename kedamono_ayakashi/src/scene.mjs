@@ -116,6 +116,10 @@ function applyFx(st, fx, t, g, size, seed) {
   } else if (fx === 'wobble') {
     st.rot += Math.sin(t * 5.2 + g.i * 0.9) * 0.13;
     st.dy += Math.sin(t * 4.1 + g.i * 1.3) * size * 0.07;
+  } else if (fx === 'shake') {
+    const k = Math.floor(t * 30);
+    st.dx += (rnd(seed, g.i, k, 6) - 0.5) * size * 0.05;
+    st.dy += (rnd(seed, g.i, k, 7) - 0.5) * size * 0.05;
   } else if (fx === 'march') {
     const ph = (t - BEAT0) / SPB + (g.i % 2) * 0.5;
     st.dy -= Math.abs(Math.sin(Math.PI * ph)) * size * 0.16;
@@ -192,6 +196,7 @@ export class Renderer {
     [this.M, this.mx] = scaledCanvas(W, 360, k);
     this.noise = makeNoiseTiles(8, 384);
     this.noisePat = this.noise.map((c) => this.o.createPattern(c, 'repeat'));
+    this.staticPat = this.noise.map((c) => this.s.createPattern(c, 'repeat'));
     this.vignette = makeVignette(k);
     this.scan = makeScanlines(k);
     // vignette + scanlines pre-composited (one full-frame blend per frame instead of two)
@@ -337,6 +342,7 @@ export class Renderer {
       if (d.layout === 'sides') imp.push({ t: l.t0 + l.rows[0].segs[1].at + 0.2, amp: 14, flash: 0.35 });
       if (d.exit === 'glitch') glitch.push({ t: l.tExit, g: 0.7, dur: d.exitDur + 0.1 });
     });
+    imp.push({ t: this.cancelClickTime(this.L[28]), amp: 9, flash: 0.3, flashCol: COL.red });
     imp.push({ t: 0.05, amp: 12, flash: 0.9 });
     imp.push({ t: 37.92, amp: 18, flash: 0.55, invert: 0.05 });
     imp.push({ t: 60.05, amp: 12, flash: 0.45 });
@@ -808,8 +814,8 @@ export class Renderer {
         const l30 = L[30];
         if (t < l29.t0) {
           this.cover(s, this.cv.plain, 1024, 1150, 1600);
-          this.dim(s, 0.86);
-          this.startScreen(s, t, l28);
+          this.dim(s, 0.82);
+          this.noiseScreen(s, t, l28);
         } else if (t < l30.t0) {
           this.cover(s, this.cv.plain, lerp(900, 1100, (t - l29.t0) / 3.4), 1120, 1350);
           this.dim(s, 0.68 - kick * 0.1);
@@ -1175,27 +1181,115 @@ export class Renderer {
     }
   }
 
-  startScreen(s, t, l) {
-    const a = smooth(l.t0 - 0.2, l.t0 + 0.2, t) * (1 - smooth(l.t1 - 0.15, l.t1, t));
+  /** the beat on which the cursor hits CANCEL (first beat >= 1.1 s into the line) */
+  cancelClickTime(l) {
+    return Audio.beatTime(Math.ceil((l.t0 + 1.1 - BEAT0) / SPB));
+  }
+
+  /** bridge, first line: TV static and a system dialog whose CANCEL button does nothing */
+  noiseScreen(s, t, l) {
+    const a = smooth(l.t0 - 0.15, l.t0 + 0.15, t) * (1 - smooth(l.t1 - 0.12, l.t1, t));
     if (a <= 0) return;
+    const u = t - l.t0;
+    const tc = this.cancelClickTime(l) - l.t0;
+    const failed = u >= tc;
+    const k = Math.floor(t * 30);
+    // analogue static (chunky, nearest-sampled), heavier once cancelling has failed
     s.save();
-    s.globalAlpha = a * 0.1;
-    s.strokeStyle = '#ffffff';
-    s.lineWidth = 3;
-    s.font = '560px Bebas';
-    s.textAlign = 'center';
-    s.textBaseline = 'middle';
-    s.strokeText('START', W / 2, H / 2 - 20);
-    s.globalAlpha = a * 0.5;
-    s.lineWidth = 3;
+    s.globalCompositeOperation = 'screen';
+    s.globalAlpha = a * (0.14 + (failed ? 0.16 : 0) + 0.06 * rnd(k, 'st'));
+    s.imageSmoothingEnabled = false;
+    s.scale(3, 3);
+    s.translate(-Math.floor(rnd(k, 'sx') * 384), -Math.floor(rnd(k, 'sy') * 384));
+    s.fillStyle = this.staticPat[k % this.staticPat.length];
+    s.fillRect(0, 0, W / 3 + 400, H / 3 + 400);
+    s.restore();
+    // rolling interference bar
+    const ry = ((t * 420) % (H + 300)) - 150;
+    const rg = s.createLinearGradient(0, ry - 90, 0, ry + 90);
+    rg.addColorStop(0, 'rgba(255,255,255,0)');
+    rg.addColorStop(0.5, 'rgba(255,255,255,0.12)');
+    rg.addColorStop(1, 'rgba(255,255,255,0)');
+    s.save();
+    s.globalAlpha = a;
+    s.fillStyle = rg;
+    s.fillRect(0, ry - 90, W, 180);
+    s.restore();
+
+    // dialog
+    const pop = ez(E.outB, (u - 0.1) / 0.35, 1.6);
+    if (pop <= 0) return;
+    const shake = failed ? Math.exp(-(u - tc) * 6) * 24 * noise1(t * 40, 9) : 0;
+    const dw = 860;
+    const dh = 214;
+    const dx = W / 2 - dw / 2;
+    const dy = 690;
+    const sc = lerp(0.85, 1, pop);
+    s.save();
+    s.globalAlpha = a * clamp(pop * 1.5);
+    s.translate(W / 2 + shake, dy + dh / 2);
+    s.scale(sc, sc);
+    s.translate(-W / 2, -(dy + dh / 2));
+    s.fillStyle = 'rgba(8,8,8,0.9)';
+    s.fillRect(dx, dy, dw, dh);
+    s.strokeStyle = failed ? COL.redHot : 'rgba(244,240,232,0.8)';
+    s.lineWidth = 2;
+    s.strokeRect(dx, dy, dw, dh);
+    s.fillStyle = failed ? COL.redHot : 'rgba(244,240,232,0.88)';
+    s.fillRect(dx, dy, dw, 36);
+    text(s, failed ? 'SYSTEM ERROR' : 'NOISE CANCELLING', dx + 16, dy + 18, 'Mono', 20, '#0a0a0a', { tracking: 3 });
+    text(s, 'x', dx + dw - 24, dy + 18, 'Mono', 22, '#0a0a0a', { align: 'center' });
+    text(s, failed ? 'ERROR 0x7E: NOISE CANNOT BE CANCELLED' : 'CANCELLING NOISE ...', dx + 26, dy + 74, 'Mono', 25,
+      failed ? COL.redHot : '#f4f0e8', { tracking: 2 });
+    // progress stalls at 99 %
+    const p = failed ? 0.99 : 0.99 * ez(E.outC, (u - 0.25) / Math.max(0.2, tc - 0.4));
+    const pw = dw - 260;
+    s.strokeStyle = 'rgba(244,240,232,0.6)';
+    s.strokeRect(dx + 26, dy + 104, pw, 24);
+    s.fillStyle = failed ? (Math.floor(t * 8) % 2 ? '#5c0a07' : COL.redHot) : '#f4f0e8';
+    s.fillRect(dx + 29, dy + 107, (pw - 6) * p, 18);
+    text(s, `${Math.floor(p * 100)}%`, dx + 26 + pw + 18, dy + 116, 'Mono', 22, '#f4f0e8');
+    // the CANCEL button
+    const bw = 170;
+    const bh = 48;
+    const bx = dx + dw - bw - 26;
+    const by = dy + dh - bh - 18;
+    const pressed = u >= tc && u < tc + 0.12;
+    const off = pressed ? 3 : 0;
+    s.fillStyle = pressed ? '#3a3a3a' : failed ? '#2a0a08' : '#1c1c1c';
+    s.fillRect(bx, by + off, bw, bh);
+    s.strokeStyle = failed ? COL.redHot : '#f4f0e8';
+    s.strokeRect(bx, by + off, bw, bh);
+    text(s, 'CANCEL', bx + bw / 2, by + off + bh / 2, 'Mono', 24, failed ? COL.redHot : '#f4f0e8', { align: 'center', tracking: 4 });
+    if (failed) {
+      s.fillStyle = COL.redHot;
+      s.fillRect(bx + 12, by + bh / 2 - 1, bw - 24, 3);
+    }
+    // mouse pointer glides to the button and clicks on the beat
+    const cu = ez(E.ioC, (u - 0.45) / Math.max(0.2, tc - 0.55));
+    this.pointer(s, lerp(W - 300, bx + bw * 0.62, cu), lerp(H - 70, by + bh * 0.6, cu) + off);
+    s.restore();
+  }
+
+  pointer(s, x, y) {
+    s.save();
+    s.translate(x, y);
+    s.scale(1.7, 1.7);
     s.beginPath();
-    s.roundRect(70, 70, W - 140, H - 140, 36);
+    s.moveTo(0, 0);
+    s.lineTo(0, 26);
+    s.lineTo(7, 19);
+    s.lineTo(12, 30);
+    s.lineTo(17, 28);
+    s.lineTo(12, 17);
+    s.lineTo(21, 17);
+    s.closePath();
+    s.fillStyle = '#ffffff';
+    s.fill();
+    s.strokeStyle = '#000000';
+    s.lineWidth = 1.5;
     s.stroke();
     s.restore();
-    const blink = Math.floor((t - BEAT0) / (SPB / 2)) % 2 === 0;
-    if (blink) text(s, 'PRESS START', W / 2, 700, 'Dot', 46, COL.redHot, { align: 'center', alpha: a, tracking: 8 });
-    text(s, '1P  ▶', 130, 150, 'Dot', 32, '#ffffff', { alpha: a * 0.8 });
-    text(s, 'LIFE ■■■□□', W - 130, 150, 'Dot', 32, '#ffffff', { align: 'right', alpha: a * 0.8 });
   }
 
   ecg(s, t, l, flat) {

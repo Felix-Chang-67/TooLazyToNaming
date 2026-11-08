@@ -121,7 +121,8 @@ export const DIRECTION = [
   { ...PRE, fill: COL.white, layout: 'stairs', motif: { kind: 'stairs' }, rings: [5, 8] },
   { ...PRE, layout: 'sides', vertical: true, size: 120, y: 470 },
   // 28-30 bridge
-  { ...BRIDGE, font: 'Dot', size: 120, enter: 'type', stagger: 0.09, motif: { kind: 'start' }, y: 440 },
+  // 28 uncancellable noise: decodes out of static, keeps trembling (TV static + failing CANCEL dialog in the bg)
+  { ...BRIDGE, font: 'Dot', size: 118, enter: 'decode', stagger: 0.05, fx: 'shake', y: 400 },
   { ...BRIDGE, font: 'KakuBlack', size: 100, rows: [[{ r: [0, 12] }], [{ r: [12, 16], at: 2.1 }]], y: 400, rowGap: 140, motif: { kind: 'rules' } },
   {
     ...BRIDGE,

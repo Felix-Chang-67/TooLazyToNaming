@@ -176,8 +176,15 @@ export function makeNoiseTiles(count = 8, size = 384, seed = 7) {
   return tiles;
 }
 
-export function makeVignette() {
-  const [c, x] = canvas();
+/** canvas with physical size (w*k, h*k) whose base transform maps 1920x1080 logical units onto it */
+export function scaledCanvas(w, h, k = 1) {
+  const [c, x] = canvas(Math.round(w * k), Math.round(h * k));
+  x.setTransform(k, 0, 0, k, 0, 0);
+  return [c, x];
+}
+
+export function makeVignette(k = 1) {
+  const [c, x] = scaledCanvas(W, H, k);
   const g = x.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 1.05);
   g.addColorStop(0, 'rgba(0,0,0,0)');
   g.addColorStop(0.6, 'rgba(0,0,0,0.28)');
@@ -187,8 +194,8 @@ export function makeVignette() {
   return c;
 }
 
-export function makeScanlines() {
-  const [c, x] = canvas();
+export function makeScanlines(k = 1) {
+  const [c, x] = scaledCanvas(W, H, k);
   x.fillStyle = 'rgba(0,0,0,0.22)';
   for (let y = 0; y < H; y += 4) x.fillRect(0, y, W, 2);
   return c;

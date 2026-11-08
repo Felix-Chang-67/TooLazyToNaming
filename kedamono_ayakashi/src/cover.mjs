@@ -144,9 +144,9 @@ s.globalAlpha = 0.1;
 s.fillStyle = R.noisePat[3];
 s.fillRect(0, 0, W, H);
 s.restore();
-s.drawImage(R.vignette, 0, 0);
+s.drawImage(R.vignette, 0, 0, W, H);
 s.globalAlpha = 0.2;
-s.drawImage(R.scan, 0, 0);
+s.drawImage(R.scan, 0, 0, W, H);
 s.globalAlpha = 1;
 
 // ---------------------------------------------------------------- export

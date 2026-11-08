@@ -3,7 +3,7 @@
 用 [素材文件夹](https://drive.google.com/drive/folders/1wg32shsOtUiH9RU9jeGxA1E3-MybtF-K)（音频 / 封面 / 双语 LRC）
 逐帧渲染的动态歌词视频（kinetic typography）。
 
-- 画面：1920×1080，60 fps，H.264（High，yuv420p，BT.709）
+- 画面：3840×2160（4K）原生渲染，60 fps，H.264（High@5.2，yuv420p，BT.709）；`SCALE=1` 可出 1080p
 - 音频：**原样拷贝**素材里的 WAV 音轨（PCM 32-bit 整数 / 96 kHz / 立体声），不做任何重编码
 - 封装：`.mov`（QuickTime 原生支持 32-bit 整数 PCM，剪辑软件 / 播放器兼容性好）
 - 开头 0–5 秒标注「歌词与翻译为个人听译，可能有误，欢迎捉虫～」
@@ -17,7 +17,7 @@ npm install
 pip install librosa soundfile fonttools
 npm run fetch     # 下载素材（Google Drive）和字体（google/fonts，SIL OFL）
 npm run render    # 分析音频 -> 多进程渲染 -> 合并 -> 封装原始音轨
-# 输出：output/KEDAMONO_AYAKASHI_lyric_video.mov
+# 输出：output/KEDAMONO_AYAKASHI_lyric_video_4K60.mov
 ```
 
 预览某几个时间点的画面：
@@ -27,7 +27,9 @@ npm run analyze                       # 只需一次
 node src/render.mjs --stills 4.5,45.6,110.6 --outdir build/stills
 ```
 
-可调参数（环境变量）：`JOBS`（并行进程数，默认 3）、`CRF`（默认 17）、`PRESET`（默认 slow）、`FPS`（默认 60）。
+可调参数（环境变量）：`SCALE`（2 = 4K，1 = 1080p，默认 2）、`JOBS`（并行进程数，默认 3）、`CRF`（默认 17）、`PRESET`（默认 medium）、`FPS`（默认 60）。
+
+画面逻辑坐标始终是 1920×1080，`SCALE` 只改变画布的物理分辨率，所以 4K 是原生绘制（文字、线条、阴影都按比例放大），不是放大 1080p。
 
 ### 封面（同时兼容 16:9 与 4:3）
 

@@ -24,7 +24,8 @@ const mat = (f) => path.join(root, 'materials', f);
 registerFonts(path.join(root, 'assets/fonts'));
 const cover = await loadCover(mat('KEDAMONO_AYAKASHI-Cover.jpg'));
 const audio = new Audio(path.join(root, 'build/analysis.json'), mat('KEDAMONO_AYAKASHI_96kHz_PCM32.wav'));
-const R = new Renderer({ cover, audio, lrcText: fs.readFileSync(mat('KEDAMONO_AYAKASHI.lrc'), 'utf8') });
+const K = Number(args.scale || 1); // 1 = 1920x1080, 2 = 3840x2160
+const R = new Renderer({ cover, audio, lrcText: fs.readFileSync(mat('KEDAMONO_AYAKASHI.lrc'), 'utf8'), scale: K });
 
 if (args.stills) {
   const outdir = args.outdir || path.join(root, 'build/stills');
@@ -47,10 +48,10 @@ if (args.stills) {
     'ffmpeg',
     [
       '-y', '-loglevel', 'error', '-nostats',
-      '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W}x${H}`, '-framerate', String(fps), '-i', 'pipe:0',
+      '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W * K}x${H * K}`, '-framerate', String(fps), '-i', 'pipe:0',
       '-vf', 'scale=out_color_matrix=bt709:out_range=tv:flags=accurate_rnd+full_chroma_int,format=yuv420p',
       '-c:v', 'libx264', '-preset', String(args.preset || 'slow'), '-crf', String(args.crf || 17),
-      '-profile:v', 'high', '-level:v', '4.2', '-g', String(fps * 2), '-bf', '3',
+      '-profile:v', 'high', '-level:v', K > 1 ? '5.2' : '4.2', '-g', String(fps * 2), '-bf', '3',
       '-threads', String(args.threads || 2),
       '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-color_range', 'tv',
       '-an', out,
@@ -60,7 +61,7 @@ if (args.stills) {
   const done = new Promise((res, rej) => ff.on('close', (code) => (code === 0 ? res() : rej(new Error(`ffmpeg exited ${code}`)))));
   const tStart = performance.now();
   for (let f = from; f < to; f++) {
-    const frame = Buffer.from(R.frame(f / fps).data());
+    const frame = R.frame(f / fps).data(); // data() returns a fresh copy of the pixels
     if (!ff.stdin.write(frame)) await new Promise((r) => ff.stdin.once('drain', r));
     if ((f - from) % 240 === 0 || f === to - 1) {
       const el = (performance.now() - tStart) / 1000;

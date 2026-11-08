@@ -2,23 +2,27 @@
 # Full pipeline: audio analysis -> parallel frame rendering (H.264 segments) -> concat ->
 # mux with the ORIGINAL audio stream copied bit-for-bit (96 kHz / 32-bit PCM) into a .mov.
 #
-#   JOBS=3 CRF=17 PRESET=slow FPS=60 ./scripts/render_video.sh
+#   SCALE=2 JOBS=3 CRF=17 PRESET=medium FPS=60 ./scripts/render_video.sh
+#   SCALE=1 renders 1920x1080, SCALE=2 renders 3840x2160 (native, not upscaled).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+SCALE=${SCALE:-2}
 FPS=${FPS:-60}
 JOBS=${JOBS:-3}
 CRF=${CRF:-17}
-PRESET=${PRESET:-slow}
+PRESET=${PRESET:-medium}
 THREADS=${THREADS:-2}
 WAV=materials/KEDAMONO_AYAKASHI_96kHz_PCM32.wav
-OUT=${OUT:-output/KEDAMONO_AYAKASHI_lyric_video.mov}
+RES=$((1080 * SCALE))p
+((SCALE == 2)) && RES=4K
+OUT=${OUT:-output/KEDAMONO_AYAKASHI_lyric_video_${RES}${FPS}.mov}
 
 mkdir -p build output
 [[ -s build/analysis.json ]] || python3 -I src/analyze_audio.py "$WAV" build/analysis.json "$FPS"
 TOTAL=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['frames'])" build/analysis.json)
 CHUNK=$(((TOTAL + JOBS - 1) / JOBS))
-echo "frames=$TOTAL jobs=$JOBS chunk=$CHUNK crf=$CRF preset=$PRESET"
+echo "frames=$TOTAL scale=$SCALE jobs=$JOBS chunk=$CHUNK crf=$CRF preset=$PRESET -> $OUT"
 
 pids=()
 : >build/segments.txt
@@ -27,7 +31,7 @@ for ((j = 0; j < JOBS; j++)); do
   to=$(((j + 1) * CHUNK))
   ((to > TOTAL)) && to=$TOTAL
   echo "file 'seg_$j.mkv'" >>build/segments.txt
-  node src/render.mjs --from "$from" --to "$to" --fps "$FPS" --crf "$CRF" --preset "$PRESET" \
+  node src/render.mjs --scale "$SCALE" --from "$from" --to "$to" --fps "$FPS" --crf "$CRF" --preset "$PRESET" \
     --threads "$THREADS" --out "build/seg_$j.mkv" >"build/seg_$j.log" 2>&1 &
   pids+=($!)
 done

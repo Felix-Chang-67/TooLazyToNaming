@@ -2,7 +2,7 @@
 // Every frame is a pure function of time t, so frames can be rendered in any order / in parallel.
 import {
   W, H, COL, E, ez, clamp, lerp, smooth, rnd, rr, noise1, canvas, layout, drawGlyphs, text, scrambleChar, scrambleFor,
-  makeNoiseTiles, makeVignette, makeScanlines,
+  makeNoiseTiles, makeVignette, makeScanlines, scaledCanvas,
 } from './lib.mjs';
 import { BPM, BEAT0, SPB, Audio } from './audio.mjs';
 import { parseLrc, DIRECTION } from './lyrics.mjs';
@@ -175,23 +175,37 @@ const base = () => ({ dx: 0, dy: 0, rot: 0, sx: 1, sy: 1, alpha: 1 });
 
 // ===================================================================================== Renderer
 export class Renderer {
-  constructor({ cover, audio, lrcText }) {
+  constructor({ cover, audio, lrcText, scale = 1 }) {
+    this.k = scale; // output resolution = 1920x1080 * k; all drawing code works in 1920x1080 units
     this.cv = cover;
     this.au = audio;
     this.L = parseLrc(lrcText);
     if (this.L.length !== DIRECTION.length) throw new Error(`direction table (${DIRECTION.length}) != lrc lines (${this.L.length})`);
     this.sections = buildSections(this.L);
     this.duration = audio.duration;
-    [this.S, this.s] = canvas();
-    [this.T, this.tx] = canvas();
-    [this.O, this.o] = canvas();
-    [this.R, this.rx] = canvas();
-    [this.Q, this.q] = canvas(W / 4, H / 4);
-    [this.M, this.mx] = canvas(W, 360);
+    const k = this.k;
+    [this.S, this.s] = scaledCanvas(W, H, k);
+    [this.T, this.tx] = scaledCanvas(W, H, k);
+    [this.O, this.o] = scaledCanvas(W, H, k);
+    [this.R, this.rx] = scaledCanvas(W, H, k);
+    [this.Q, this.q] = canvas(W / 4, H / 4); // blur buffer, resolution-independent on purpose
+    [this.M, this.mx] = scaledCanvas(W, 360, k);
     this.noise = makeNoiseTiles(8, 384);
     this.noisePat = this.noise.map((c) => this.o.createPattern(c, 'repeat'));
-    this.vignette = makeVignette();
-    this.scan = makeScanlines();
+    this.vignette = makeVignette(k);
+    this.scan = makeScanlines(k);
+    // vignette + scanlines pre-composited (one full-frame blend per frame instead of two)
+    const overlay = (vig, scan) => {
+      const [c, x] = scaledCanvas(W, H, k);
+      x.globalAlpha = vig;
+      x.drawImage(this.vignette, 0, 0, W, H);
+      x.globalAlpha = scan;
+      x.drawImage(this.scan, 0, 0, W, H);
+      return c;
+    };
+    this.overlays = { normal: overlay(1, 0.28), paper: overlay(0.55, 0.28), crt: overlay(1, 0.75) };
+    // at 4K every big bitmap draw is an upscale: bicubic buys nothing visible and costs ~30%
+    if (k > 1) for (const c of [this.s, this.tx, this.o, this.rx, this.mx]) c.imageSmoothingQuality = 'medium';
     this.prepare();
   }
 
@@ -426,7 +440,7 @@ export class Renderer {
     const tx = this.tx;
 
     // ---- background scene
-    s.setTransform(1, 0, 0, 1, 0, 0);
+    this.base(s);
     s.globalAlpha = 1;
     s.globalCompositeOperation = 'source-over';
     s.fillStyle = COL.black;
@@ -437,7 +451,7 @@ export class Renderer {
     s.restore();
 
     // ---- kinetic type layer
-    tx.setTransform(1, 0, 0, 1, 0, 0);
+    this.base(tx);
     tx.clearRect(0, 0, W, H);
     tx.save();
     this.applyCam(tx, cam, 1);
@@ -467,8 +481,8 @@ export class Renderer {
       s.save();
       this.applyCam(s, cam, 1);
       s.shadowColor = st.paper ? 'rgba(248,246,240,0.95)' : 'rgba(0,0,0,0.95)';
-      s.shadowBlur = 14;
-      s.shadowOffsetY = 3;
+      s.shadowBlur = 14 * this.k; // shadows are specified in device pixels
+      s.shadowOffsetY = 3 * this.k;
       for (const q of this.cnQueue) this.drawCn(s, ...q);
       s.restore();
     }
@@ -514,25 +528,30 @@ export class Renderer {
       s.globalCompositeOperation = 'lighter';
       for (const [col, dx] of [['#ff1030', -rgb], ['#00d8ff', rgb]]) {
         r.globalCompositeOperation = 'copy';
-        r.drawImage(this.T, 0, 0);
+        r.drawImage(this.T, 0, 0, W, H);
         r.globalCompositeOperation = 'source-in';
         r.fillStyle = col;
         r.fillRect(0, 0, W, H);
         s.globalAlpha = 0.75;
-        s.drawImage(this.R, dx, dx * 0.25);
+        s.drawImage(this.R, dx, dx * 0.25, W, H);
       }
       s.restore();
       r.globalCompositeOperation = 'source-over';
     }
-    s.drawImage(this.T, 0, 0);
+    s.drawImage(this.T, 0, 0, W, H);
+  }
+
+  /** reset a full-frame canvas to its base (logical 1920x1080) transform */
+  base(ctx) {
+    ctx.setTransform(this.k, 0, 0, this.k, 0, 0);
   }
 
   post(t, sec, st) {
     const o = this.o;
-    o.setTransform(1, 0, 0, 1, 0, 0);
+    this.base(o);
     o.globalAlpha = 1;
     o.globalCompositeOperation = 'source-over';
-    o.drawImage(this.S, 0, 0);
+    o.drawImage(this.S, 0, 0, W, H);
     const g = this.glitchAt(t, sec);
     if (g > 0.02) this.slices(o, t, g);
     const f = this.flashAt(t, st);
@@ -556,14 +575,12 @@ export class Renderer {
     o.globalCompositeOperation = 'overlay';
     o.globalAlpha = st.grain;
     o.translate(-Math.floor(rnd(k, 1) * 384), -Math.floor(rnd(k, 2) * 384));
+    o.imageSmoothingEnabled = false; // noise sampled nearest: same look, half the cost
     o.fillStyle = this.noisePat[k % this.noisePat.length];
     o.fillRect(0, 0, W + 384, H + 384);
     o.restore();
-    o.globalAlpha = st.paper ? 0.55 : 1;
-    o.drawImage(this.vignette, 0, 0);
-    o.globalAlpha = sec.id === 'bridge' && t < this.L[29].t0 ? 0.75 : 0.28;
-    o.drawImage(this.scan, 0, 0);
-    o.globalAlpha = 1;
+    const ov = st.paper ? 'paper' : sec.id === 'bridge' && t < this.L[29].t0 ? 'crt' : 'normal';
+    o.drawImage(this.overlays[ov], 0, 0, W, H);
     this.hud(o, t, sec, st);
     this.disclaimer(o, t);
     // fade in from / out to black
@@ -585,7 +602,8 @@ export class Renderer {
       const y = Math.floor(rnd(k, i, 2) * H);
       const h = Math.floor(3 + rnd(k, i, 3) * 80 * g);
       const dx = Math.round((rnd(k, i, 4) - 0.5) * 260 * g);
-      o.drawImage(this.S, 0, y, W, h, dx, y, W, h);
+      const sk = this.k;
+      o.drawImage(this.S, 0, y * sk, W * sk, h * sk, dx, y, W, h);
       if (rnd(k, i, 5) < 0.3 * g) {
         o.globalCompositeOperation = 'difference';
         o.fillStyle = rnd(k, i, 6) < 0.5 ? '#ffffff' : COL.red;
@@ -1006,7 +1024,7 @@ export class Renderer {
     s.textAlign = 'center';
     s.textBaseline = 'middle';
     s.shadowColor = 'rgba(0,0,0,0.9)';
-    s.shadowBlur = 20;
+    s.shadowBlur = 20 * this.k;
     s.font = '100px KakuBlack';
     s.fillStyle = COL.white;
     chars.forEach((ch, i) => {
@@ -1023,7 +1041,7 @@ export class Renderer {
     s.letterSpacing = '12px';
     s.fillStyle = COL.white;
     s.shadowColor = 'rgba(0,0,0,0.9)';
-    s.shadowBlur = 20;
+    s.shadowBlur = 20 * this.k;
     s.fillText(TITLE, 0, 0);
     s.restore();
   }
@@ -1103,7 +1121,7 @@ export class Renderer {
     s.globalAlpha = fade;
     s.fillStyle = COL.redHot;
     s.shadowColor = COL.redHot;
-    s.shadowBlur = 24;
+    s.shadowBlur = 24 * this.k;
     if (snap <= 0) {
       s.fillRect(0, y - 3, W * draw, 6);
     } else {
@@ -1200,7 +1218,7 @@ export class Renderer {
     s.strokeStyle = t > flat ? COL.redHot : '#ffffff';
     s.lineWidth = 3;
     s.shadowColor = COL.redHot;
-    s.shadowBlur = 18;
+    s.shadowBlur = 18 * this.k;
     s.beginPath();
     for (let k = 0; k <= n; k++) {
       const x = 60 + (k / n) * (W - 120);
@@ -1401,11 +1419,12 @@ export class Renderer {
     const d = l.d;
     const axis = y0 + d.size * 0.62;
     const m = this.mx;
-    m.setTransform(1, 0, 0, 1, 0, 0);
+    const k = this.k;
+    this.base(m);
     m.clearRect(0, 0, W, 360);
-    m.setTransform(1, 0, 0, -1, 0, axis);
+    m.setTransform(k, 0, 0, -k, 0, axis * k);
     this.drawRow(m, l, l.rows[0], y0, t, v, 1, {});
-    m.setTransform(1, 0, 0, 1, 0, 0);
+    this.base(m);
     m.globalCompositeOperation = 'destination-in';
     const g = m.createLinearGradient(0, 0, 0, 260);
     g.addColorStop(0, 'rgba(0,0,0,0.5)');
@@ -1415,7 +1434,7 @@ export class Renderer {
     m.globalCompositeOperation = 'source-over';
     for (let j = 0; j < 260; j += 5) {
       const dx = Math.sin(j * 0.09 + t * 7) * (2 + j * 0.05);
-      ctx.drawImage(this.M, 0, j, W, 5, dx, axis + j, W, 5);
+      ctx.drawImage(this.M, 0, j * k, W * k, 5 * k, dx, axis + j, W, 5);
     }
   }
 
@@ -1427,7 +1446,7 @@ export class Renderer {
       const pad = size * 0.28;
       const w = Math.ceil(seg.L.width + pad * 2 + 20);
       const h = Math.ceil(size * 1.3 + 20);
-      const [c, cx] = canvas(w, h);
+      const [c, cx] = scaledCanvas(w, h, this.k);
       cx.strokeStyle = COL.redHot;
       cx.lineWidth = size * 0.07;
       cx.beginPath();
@@ -1445,6 +1464,8 @@ export class Renderer {
         cx.fillRect(rr(0, w, 'slx', i), rr(0, h, 'sly', i), rr(20, 90, 'slw', i), rr(1, 3, 'slh', i));
       }
       seg.stamp = c;
+      seg.stampW = w;
+      seg.stampH = h;
     }
     const e = ez(E.outX, u / 0.16);
     const sc = lerp(2.8, 1, e);
@@ -1455,7 +1476,7 @@ export class Renderer {
     ctx.translate(x + seg.L.width / 2, y);
     ctx.rotate(-0.13 + (1 - e) * 0.2);
     ctx.scale(sc, sc);
-    ctx.drawImage(seg.stamp, -seg.stamp.width / 2, -seg.stamp.height / 2);
+    ctx.drawImage(seg.stamp, -seg.stampW / 2, -seg.stampH / 2, seg.stampW, seg.stampH);
     ctx.restore();
     return null;
   }

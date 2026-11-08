@@ -29,6 +29,15 @@ node src/render.mjs --stills 4.5,45.6,110.6 --outdir build/stills
 
 可调参数（环境变量）：`JOBS`（并行进程数，默认 3）、`CRF`（默认 17）、`PRESET`（默认 slow）、`FPS`（默认 60）。
 
+### 封面（同时兼容 16:9 与 4:3）
+
+```bash
+npm run cover     # -> output/cover_16x9.jpg / cover_16x9.png（1920×1080）、output/cover_4x3.jpg（1440×1080）
+```
+
+所有关键内容（专辑图、标题、标签）都放在画面中央 1440×1080 的 4:3 安全区内，并避开底部会被平台
+叠加时长 / 播放量的区域；两侧 240 px 只有背景，所以 16:9 原图和居中裁成 4:3 都完整。
+
 ## 结构
 
 | 文件 | 作用 |
@@ -39,6 +48,7 @@ node src/render.mjs --stills 4.5,45.6,110.6 --outdir build/stills
 | `src/scene.mjs` | 画面本体：分段背景、各句专属动效、逐字入场/退场、镜头抖动、闪白/反色、故障切片、RGB 分离、胶片颗粒、HUD |
 | `src/lib.mjs` | 缓动、确定性随机、字体注册、封面变体（红光 / 负片 / 纸面）、逐字排版 |
 | `src/render.mjs` | 渲染静帧或指定帧区间，直接把 RGBA 帧喂给 ffmpeg |
+| `src/cover.mjs` | 视频封面（16:9 + 4:3 安全区） |
 | `scripts/render_video.sh` | 完整流水线（并行分段渲染 → concat → `-c:a copy` 封装原音轨） |
 
 每一帧只取决于时间 `t`（所有随机都由时间/序号做种子），所以可以任意顺序、多进程并行渲染。

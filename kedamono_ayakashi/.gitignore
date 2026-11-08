@@ -1,0 +1,6 @@
+node_modules/
+materials/
+assets/fonts/
+build/
+output/
+__pycache__/

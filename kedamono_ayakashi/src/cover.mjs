@@ -89,19 +89,18 @@ const fit = (str, font, size) => {
   if (L.width > maxW) L = layout(s, str, font, Math.floor((size * maxW) / L.width), { tracking: 0.02 });
   return L;
 };
+// the only large text is the song title; the block is centred on the album art (y = 470)
 shadow(true);
 const l1 = fit('KEDAMONO', 'AntonioBold', 196);
 const l2 = fit('_AYAKASHI', 'AntonioBold', 196);
-drawGlyphs(s, l1, tx, 300, { align: 'left', fill: COL.white });
-drawGlyphs(s, l2, tx, 300 + l1.size * 0.98, { align: 'left', fill: COL.redHot });
-// a chorus phrase as the hook line
-const hook = layout(s, '喪失感のケダモノ', 'Dela', 66);
-const hy = 300 + l1.size * 0.98 + l2.size * 0.5 + 92;
-drawGlyphs(s, hook, tx + 4, hy, { align: 'left', fill: COL.white, style: (g) => (g.i >= 4 ? { fill: COL.redHot } : null) });
+const y1 = 330;
+const y2 = y1 + l1.size * 0.98;
+drawGlyphs(s, l1, tx, y1, { align: 'left', fill: COL.white });
+drawGlyphs(s, l2, tx, y2, { align: 'left', fill: COL.redHot });
 shadow(false);
 
 // labels
-const ly = hy + 96;
+const ly = y2 + l2.size * 0.5 + 72;
 s.font = '40px SCBold';
 const tag = '中日双语歌词';
 const tagW = s.measureText(tag).width + 44;

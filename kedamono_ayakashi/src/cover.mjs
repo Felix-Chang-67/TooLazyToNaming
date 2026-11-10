@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { registerFonts, loadCover, W, H, COL, canvas, layout, drawGlyphs, text, rr, rnd } from './lib.mjs';
+import { MATERIALS, registerFonts, loadCover, W, H, COL, canvas, layout, drawGlyphs, text, rr, rnd } from './lib.mjs';
 import { Audio } from './audio.mjs';
 import { Renderer } from './scene.mjs';
 
@@ -16,9 +16,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outdir = process.argv[2] || path.join(root, 'output');
 const mat = (f) => path.join(root, 'materials', f);
 registerFonts(path.join(root, 'assets/fonts'));
-const cover = await loadCover(mat('KEDAMONO_AYAKASHI-Cover.jpg'));
-const audio = new Audio(path.join(root, 'build/analysis.json'), mat('KEDAMONO_AYAKASHI_96kHz_PCM32.wav'));
-const R = new Renderer({ cover, audio, lrcText: fs.readFileSync(mat('KEDAMONO_AYAKASHI.lrc'), 'utf8') });
+const cover = await loadCover(mat(MATERIALS.cover));
+const audio = new Audio(path.join(root, 'build/analysis.json'), mat(MATERIALS.audio));
+const R = new Renderer({ cover, audio, lrcText: fs.readFileSync(mat(MATERIALS.lyrics), 'utf8') });
 
 const SAFE_X0 = (W - (H * 4) / 3) / 2; // 240
 const SAFE_X1 = W - SAFE_X0; // 1680
@@ -118,7 +118,7 @@ text(s, 'LYRIC VIDEO', tx + tagW + 28, ly + 2, 'Mono', 30, COL.white, { tracking
 
 // HUD details inside the safe area
 text(s, '■ KEDAMONO_AYAKASHI', SAFE_X0 + 40, 70, 'Mono', 22, 'rgba(244,240,232,0.75)', { tracking: 4 });
-text(s, '141 BPM  ▪ 96kHz / 32bit', SAFE_X1 - 40, 70, 'Mono', 22, 'rgba(244,240,232,0.75)', { align: 'right', tracking: 4 });
+text(s, '141 BPM  ▪ 48kHz / 24bit', SAFE_X1 - 40, 70, 'Mono', 22, 'rgba(244,240,232,0.75)', { align: 'right', tracking: 4 });
 s.save();
 s.strokeStyle = 'rgba(244,240,232,0.55)';
 s.lineWidth = 3;

@@ -2,6 +2,13 @@
 import path from 'node:path';
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 
+/** source files (fetched by scripts/fetch_materials.sh into materials/) */
+export const MATERIALS = {
+  audio: 'KEDAMONO_AYAKASHI_24bit_48kHz.wav', // official master, PCM 24-bit / 48 kHz
+  lyrics: 'KEDAMONO_AYAKASHI_v2.lrc', // official lyrics + Chinese translation
+  cover: 'KEDAMONO_AYAKASHI-Cover.jpg',
+};
+
 export const W = 1920;
 export const H = 1080;
 

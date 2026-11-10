@@ -8,7 +8,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT=${1:-output/KEDAMONO_AYAKASHI_lyric_video_4K60.mov}
-WAV=materials/KEDAMONO_AYAKASHI_96kHz_PCM32.wav
+WAV=materials/KEDAMONO_AYAKASHI_24bit_48kHz.wav
 
 echo "== streams"
 ffprobe -v error -show_entries stream=index,codec_type,codec_name,codec_tag_string,profile,level,width,height,pix_fmt,r_frame_rate,sample_rate,sample_fmt,bits_per_raw_sample,channels:format=duration,size,bit_rate -of compact "$OUT"

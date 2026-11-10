@@ -12,6 +12,6 @@ dl() { # <drive file id> <output name>
     "https://drive.usercontent.google.com/download?id=$1&export=download&confirm=t"
 }
 
-dl 1XYbg1WECSXeYgFfGFZEbTFsTZ-JUyn8r KEDAMONO_AYAKASHI_96kHz_PCM32.wav
+dl 1qVCLzOCe1jjCDUkwiMCdXabnU-fijT54 KEDAMONO_AYAKASHI_24bit_48kHz.wav
 dl 1b748lrCsfkq8DeTdSqs49S-2Yqjbq32j KEDAMONO_AYAKASHI-Cover.jpg
-dl 1uZshg0QsTrOHzkchF6VBvZpw2o3L_Y-P KEDAMONO_AYAKASHI.lrc
+dl 14qnDY5s38IBxKjk8_OGkVgMJdkzsxHsz KEDAMONO_AYAKASHI_v2.lrc

@@ -1,8 +1,8 @@
 // Time-indexed access to the precomputed audio analysis + the raw PCM (for oscilloscopes).
 import fs from 'node:fs';
 
-export const BPM = 141; // measured: grid search over the onset envelope (analysis gives ~140.97)
-export const BEAT0 = 0.052; // time of beat 0 (a downbeat)
+export const BPM = 141; // measured: grid search of BPM x phase over the onset envelope (best: 141.00)
+export const BEAT0 = 0.112; // time of beat 0 (a downbeat) in the official 24-bit / 48 kHz master
 export const SPB = 60 / BPM;
 
 export class Audio {
@@ -30,23 +30,33 @@ export class Audio {
           rate: buf.readUInt32LE(p + 12),
           bits: buf.readUInt16LE(p + 22),
         };
+        // WAVE_FORMAT_EXTENSIBLE: the real format tag is the first field of the sub-format GUID
+        if (fmt.format === 0xfffe && size >= 40) fmt.format = buf.readUInt16LE(p + 8 + 24);
       } else if (id === 'data') {
         this.pcm = { buf, start: p + 8, size: Math.min(size, buf.length - p - 8), ...fmt };
         break;
       }
       p += 8 + size + (size & 1);
     }
-    if (!this.pcm || this.pcm.bits !== 32 || this.pcm.format === 3) throw new Error('expected 32-bit integer PCM wav');
+    if (!this.pcm || this.pcm.format !== 1 || ![16, 24, 32].includes(this.pcm.bits)) {
+      throw new Error('expected 16/24/32-bit integer PCM wav');
+    }
+    this.pcm.bytes = this.pcm.bits / 8;
+    this.pcm.scale = 2 ** (this.pcm.bits - 1);
   }
 
   /** mono sample at absolute sample index, [-1,1] */
   sample(i) {
-    const { buf, start, size, channels } = this.pcm;
-    const off = start + i * channels * 4;
-    if (i < 0 || off + channels * 4 > start + size) return 0;
+    const { buf, start, size, channels, bytes, scale } = this.pcm;
+    const frame = channels * bytes;
+    const off = start + i * frame;
+    if (i < 0 || off + frame > start + size) return 0;
     let v = 0;
-    for (let c = 0; c < channels; c++) v += buf.readInt32LE(off + c * 4);
-    return v / channels / 2147483648;
+    for (let c = 0; c < channels; c++) {
+      const o = off + c * bytes;
+      v += bytes === 3 ? buf.readIntLE(o, 3) : bytes === 4 ? buf.readInt32LE(o) : buf.readInt16LE(o);
+    }
+    return v / channels / scale;
   }
 
   /** n points of waveform centred on t spanning `span` seconds */

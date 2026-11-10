@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Full pipeline: audio analysis -> parallel frame rendering (H.264 segments) -> concat ->
-# mux with the ORIGINAL audio stream copied bit-for-bit (96 kHz / 32-bit PCM) into a .mov.
+# mux with the ORIGINAL audio stream copied bit-for-bit (official master, 48 kHz / 24-bit PCM) into a .mov.
 #
 #   SCALE=2 JOBS=3 CRF=17 PRESET=medium FPS=60 ./scripts/render_video.sh
 #   SCALE=1 renders 1920x1080, SCALE=2 renders 3840x2160 (native, not upscaled).
@@ -13,7 +13,7 @@ JOBS=${JOBS:-3}
 CRF=${CRF:-17}
 PRESET=${PRESET:-medium}
 THREADS=${THREADS:-2}
-WAV=materials/KEDAMONO_AYAKASHI_96kHz_PCM32.wav
+WAV=materials/KEDAMONO_AYAKASHI_24bit_48kHz.wav
 RES=$((1080 * SCALE))p
 ((SCALE == 2)) && RES=4K
 OUT=${OUT:-output/KEDAMONO_AYAKASHI_lyric_video_${RES}${FPS}.mov}

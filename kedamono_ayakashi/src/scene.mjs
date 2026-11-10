@@ -10,6 +10,8 @@ import { parseLrc, DIRECTION } from './lyrics.mjs';
 export const DISCLAIMER = '歌词与翻译为个人听译，可能有误，欢迎捉虫～';
 const TITLE = 'KEDAMONO_AYAKASHI';
 export const ARTIST = 'ヒトリエ';
+const SONG_START = 0.1; // first transient of the official master
+const FINAL_HIT = Audio.beatTime(394); // last hit before the music stops (~167.77 s)
 const TAU = Math.PI * 2;
 
 const STYLE = {
@@ -116,6 +118,11 @@ function applyFx(st, fx, t, g, size, seed) {
   } else if (fx === 'wobble') {
     st.rot += Math.sin(t * 5.2 + g.i * 0.9) * 0.13;
     st.dy += Math.sin(t * 4.1 + g.i * 1.3) * size * 0.07;
+  } else if (fx === 'pulse') {
+    const b = (t - BEAT0) / SPB;
+    const p = Math.exp(-(b - Math.floor(b)) * 5);
+    st.sx *= 1 + 0.07 * p;
+    st.sy *= 1 + 0.07 * p;
   } else if (fx === 'shake') {
     const k = Math.floor(t * 30);
     st.dx += (rnd(seed, g.i, k, 6) - 0.5) * size * 0.05;
@@ -227,7 +234,7 @@ export class Renderer {
       const est = (a) => (a / total) * dur * 0.72;
       let rows = d.rows || [[{ r: [0, total] }]];
       if (d.layout === 'network') rows = d.words.map((w, k) => [{ r: w, at: d.wordAt[k] }]);
-      if (d.layout === 'sides') {
+      if (d.layout === 'sides' && !d.rows) {
         const sp = cps.indexOf(' ');
         rows = [[{ r: [0, sp], at: 0 }, { r: [sp + 1, total], at: Math.max(0.45, est(sp + 1)) }]];
       }
@@ -291,15 +298,21 @@ export class Renderer {
         return;
       }
       pos.push({ ch, x: 330 + p * 160, y: 255 + p * 58, at: phraseStart + j * 0.09, phrase, i: pos.length });
-      p += 1;
+      const comma = '、，,。'.includes(ch);
+      p += comma ? 0.55 : 1;
       j++;
+      if (comma) {
+        phrase++;
+        j = 0;
+        phraseStart = est(k + 1);
+      }
     });
     l.stairs = { pos, size, w: layout(this.s, cps.join(''), d.font, size).glyphs };
   }
 
   buildNetwork() {
     const targets = [
-      [480, 330], [1440, 400], [900, 690], // line 17
+      [480, 330], [1440, 400], [900, 690], [300, 790], // line 17
       [400, 250], [1500, 270], [560, 720], [1380, 700], // line 35
       [960, 200], [250, 520], [1670, 500], [980, 520], // line 36
     ];
@@ -323,7 +336,7 @@ export class Renderer {
         }
       });
     });
-    this.net = { nodes, edges, targets: { 17: [0, 1, 2], 35: [3, 4, 5, 6], 36: [7, 8, 9, 10] } };
+    this.net = { nodes, edges, targets: { 17: [0, 1, 2, 3], 35: [4, 5, 6, 7], 36: [8, 9, 10, 11] } };
   }
 
   buildEvents() {
@@ -343,17 +356,20 @@ export class Renderer {
       if (d.exit === 'glitch') glitch.push({ t: l.tExit, g: 0.7, dur: d.exitDur + 0.1 });
     });
     imp.push({ t: this.cancelClickTime(this.L[28]), amp: 9, flash: 0.3, flashCol: COL.red });
-    imp.push({ t: 0.05, amp: 12, flash: 0.9 });
-    imp.push({ t: 37.92, amp: 18, flash: 0.55, invert: 0.05 });
-    imp.push({ t: 60.05, amp: 12, flash: 0.45 });
-    imp.push({ t: 129.5, amp: 10, flash: 0.3 });
-    imp.push({ t: 133.5, amp: 16, flash: 0.5, invert: 0.05 });
-    imp.push({ t: 167.71, amp: 10, flash: 0.7 });
+    imp.push({ t: SONG_START, amp: 12, flash: 0.9 });
+    imp.push({ t: Audio.beatTime(89), amp: 18, flash: 0.55, invert: 0.05 }); // pre-chorus 1 hit
+    imp.push({ t: Audio.beatTime(141), amp: 12, flash: 0.45 }); // interlude crash
+    imp.push({ t: this.L[34].t1, amp: 10, flash: 0.3 });
+    imp.push({ t: 133.56, amp: 16, flash: 0.5, invert: 0.05 }); // outro bass drop
+    imp.push({ t: FINAL_HIT, amp: 10, flash: 0.7 });
     imp.sort((a, b) => a.t - b.t);
     this.impacts = imp;
     for (const s of this.sections) if (s.t0 > 0) glitch.push({ t: s.t0 - 0.06, g: 1, dur: 0.32 });
-    glitch.push({ t: 0.05, g: 1, dur: 0.5 });
-    glitch.push({ t: 167.71, g: 1, dur: 0.4 });
+    glitch.push({ t: SONG_START, g: 1, dur: 0.5 });
+    glitch.push({ t: FINAL_HIT, g: 1, dur: 0.4 });
+    // the tape rewinds through 1:46 (see vhsScreen)
+    const l30 = this.L[30];
+    glitch.push({ t: l30.t0, g: 0.22, dur: l30.rows[1].segs[0].at, flat: true });
     for (const e of imp) glitch.push({ t: e.t, g: 0.45, dur: 0.18 });
     glitch.sort((a, b) => a.t - b.t);
     this.glitches = glitch;
@@ -431,7 +447,7 @@ export class Renderer {
     for (const ev of this.glitches) {
       if (ev.t > t) break;
       const dt = t - ev.t;
-      if (dt < ev.dur) g = Math.max(g, ev.g * (1 - dt / ev.dur));
+      if (dt < ev.dur) g = Math.max(g, ev.flat ? ev.g : ev.g * (1 - dt / ev.dur));
     }
     if (sec.id.startsWith('chorus') || sec.id === 'outro') g = Math.max(g, 0.35 * this.au.hit(this.au.snares, t, 18, 0.15, 0.6));
     return g;
@@ -590,7 +606,7 @@ export class Renderer {
     this.hud(o, t, sec, st);
     this.disclaimer(o, t);
     // fade in from / out to black
-    const fade = Math.max(1 - smooth(0, 0.06, t), smooth(167.75, 168.25, t));
+    const fade = Math.max(1 - smooth(0, 0.06, t), smooth(FINAL_HIT + 0.04, FINAL_HIT + 0.48, t));
     if (fade > 0) {
       o.globalAlpha = fade;
       o.fillStyle = '#000';
@@ -820,10 +836,11 @@ export class Renderer {
           this.cover(s, this.cv.plain, lerp(900, 1100, (t - l29.t0) / 3.4), 1120, 1350);
           this.dim(s, 0.68 - kick * 0.1);
         } else {
-          const flat = l30.t0 + l30.rows[1].segs[0].at;
-          this.cover(s, this.cv.red, 1024, 1150, lerp(1500, 1200, (t - l30.t0) / 5));
-          this.dim(s, t < flat ? 0.72 : 0.9);
-          this.ecg(s, t, l30, flat);
+          const play = l30.t0 + l30.rows[1].segs[0].at;
+          const wob = t < play ? noise1(t * 9, 21) * 26 : 0;
+          this.cover(s, this.cv.plain, 1024 + wob, 1150, lerp(1500, 1250, (t - l30.t0) / 5));
+          this.dim(s, t < play ? 0.74 : 0.7);
+          this.vhsScreen(s, t, l30, play);
         }
         this.dust(s, t, st.dust);
         break;
@@ -1292,43 +1309,70 @@ export class Renderer {
     s.restore();
   }
 
-  ecg(s, t, l, flat) {
-    const y0 = 880;
-    const span = 2.4;
-    const n = 300;
-    const a = smooth(l.t0, l.t0 + 0.3, t) * (1 - smooth(l.t1 - 0.25, l.t1, t));
+  /** bridge, last line: a tape rewinding back to "あの時", then playing from there */
+  vhsScreen(s, t, l, play) {
+    const a = smooth(l.t0 - 0.1, l.t0 + 0.2, t) * (1 - smooth(l.t1 - 0.2, l.t1, t));
     if (a <= 0) return;
-    const val = (tau) => {
-      if (tau > flat || tau < l.t0 - 3) return 0;
-      const b = (tau - BEAT0) / SPB;
-      const ph = b - Math.floor(b);
-      if (ph < 0.05) return -Math.sin((ph / 0.05) * Math.PI) * 1;
-      if (ph < 0.1) return Math.sin(((ph - 0.05) / 0.05) * Math.PI) * 0.45;
-      if (ph > 0.3 && ph < 0.5) return -Math.sin(((ph - 0.3) / 0.2) * Math.PI) * 0.15;
-      return 0;
-    };
+    const rew = t < play;
+    const k = Math.floor(t * 30);
+    if (rew) {
+      // rewind streaks racing right -> left
+      s.save();
+      s.globalCompositeOperation = 'lighter';
+      s.fillStyle = '#ffffff';
+      for (let i = 0; i < 28; i++) {
+        const len = rr(200, 900, 'vl', i);
+        const span = W + len + 400;
+        const x = W + 200 - ((((t - l.t0) * rr(1800, 4200, 'vs', i) + rr(0, W, 'vx', i)) % span) + span) % span;
+        s.globalAlpha = a * rr(0.06, 0.22, 'va', i);
+        s.fillRect(x, rr(80, H - 80, 'vy', i), len, rr(1, 3, 'vh', i));
+      }
+      s.restore();
+    }
+    // tracking noise: a band of torn lines, violent while rewinding, settling once playing
+    const bandY = rew ? 760 + Math.sin(t * 9) * 40 : 960 + Math.sin(t * 3) * 10;
+    const strength = rew ? 1 : 0.35;
+    s.save();
+    for (let j = 0; j < 22; j++) {
+      for (let q = 0; q < 6; q++) {
+        if (rnd(k, j, q, 'tn') > 0.55 * strength) continue;
+        s.globalAlpha = a * rr(0.15, 0.6, k, j, q) * strength;
+        s.fillStyle = rnd(k, j, q, 'tc') < 0.15 ? COL.redHot : '#ffffff';
+        s.fillRect(rr(0, W, k, j, q, 'tx'), bandY + j * 4, rr(30, 400, k, j, q, 'tw'), 2);
+      }
+    }
+    s.restore();
+    // on-screen display: REW (blinking) / PLAY, and a tape counter that runs back to 0:00:00
     s.save();
     s.globalAlpha = a;
-    s.strokeStyle = t > flat ? COL.redHot : '#ffffff';
-    s.lineWidth = 3;
-    s.shadowColor = COL.redHot;
-    s.shadowBlur = 18 * this.k;
-    s.beginPath();
-    for (let k = 0; k <= n; k++) {
-      const x = 60 + (k / n) * (W - 120);
-      const tau = t - (1 - k / n) * span;
-      const yy = y0 + val(tau) * 110;
-      if (k) s.lineTo(x, yy);
-      else s.moveTo(x, yy);
+    s.fillStyle = '#f4f0e8';
+    const ix = 110;
+    const iy = 160;
+    if (rew) {
+      if (Math.floor(t * 4) % 2 === 0) {
+        for (const ox of [0, 30]) {
+          s.beginPath();
+          s.moveTo(ix + ox, iy);
+          s.lineTo(ix + ox + 30, iy - 20);
+          s.lineTo(ix + ox + 30, iy + 20);
+          s.closePath();
+          s.fill();
+        }
+        text(s, 'REW', ix + 82, iy + 2, 'Mono', 44, '#f4f0e8', { alpha: a, tracking: 6 });
+      }
+    } else {
+      s.beginPath();
+      s.moveTo(ix + 6, iy - 22);
+      s.lineTo(ix + 42, iy);
+      s.lineTo(ix + 6, iy + 22);
+      s.closePath();
+      s.fill();
+      text(s, 'PLAY', ix + 62, iy + 2, 'Mono', 44, '#f4f0e8', { alpha: a, tracking: 6 });
     }
-    s.stroke();
-    s.fillStyle = '#ffffff';
-    s.beginPath();
-    s.arc(W - 60, y0 + val(t) * 110, 6, 0, TAU);
-    s.fill();
     s.restore();
-    const bpm = t > flat ? '---' : String(BPM);
-    text(s, `♥ ${bpm}`, W - 70, y0 - 150, 'Mono', 30, t > flat ? COL.redHot : '#ffffff', { align: 'right', alpha: a * 0.85 });
+    const v = Math.max(0, rew ? (play - t) * 47 : t - play);
+    const hms = `${Math.floor(v / 3600)}:${String(Math.floor(v / 60) % 60).padStart(2, '0')}:${String(Math.floor(v) % 60).padStart(2, '0')}`;
+    text(s, `${rew ? '-' : ' '}${hms}`, W - 110, iy + 2, 'Mono', 44, '#f4f0e8', { align: 'right', alpha: a, tracking: 4 });
   }
 
   noSide(s, t, sec) {
@@ -1416,7 +1460,7 @@ export class Renderer {
     if (d.echo) {
       for (const k of [2, 1]) {
         for (const dir of [-1, 1]) {
-          this.drawRow(ctx, l, l.rows[0], y0 + dir * k * d.size * 0.72, t + 0.0, v, dim * (0.32 / k), { delay: k * 0.15, outline: true });
+          this.drawRow(ctx, l, l.rows[0], y0 + dir * k * (d.echoGap ?? d.size * 0.72), t, v, dim * (0.32 / k), { delay: k * 0.15, outline: true });
         }
       }
     }
@@ -1853,7 +1897,7 @@ export class Renderer {
 
   rings(ctx, l, t) {
     const [a, b] = l.d.rings;
-    const pts = l.stairs.pos.slice(a - 1, b);
+    const pts = l.stairs.pos.slice(a, b);
     if (!pts.length) return;
     const t1 = l.t0 + pts[0].at;
     if (t < t1) return;
@@ -2017,7 +2061,7 @@ export class Renderer {
 
   // ========================================================================================= HUD
   hud(o, t, sec, st) {
-    const a = 0.85 * smooth(0.5, 1.1, t) * (1 - smooth(166.6, 167.6, t));
+    const a = 0.85 * smooth(0.5, 1.1, t) * (1 - smooth(FINAL_HIT - 1.1, FINAL_HIT - 0.1, t));
     if (a <= 0) return;
     const ink = st.paper ? '#141414' : '#f4f0e8';
     const sub = st.paper ? 'rgba(20,20,20,0.7)' : 'rgba(244,240,232,0.6)';

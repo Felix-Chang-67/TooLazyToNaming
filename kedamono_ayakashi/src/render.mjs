@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { MATERIALS, registerFonts, loadCover, W, H } from './lib.mjs';
 import { Audio } from './audio.mjs';
 import { Renderer } from './scene.mjs';
+import { Theater } from './theater.mjs';
 
 const args = {};
 for (let i = 2; i < process.argv.length; i++) {
@@ -25,7 +26,11 @@ registerFonts(path.join(root, 'assets/fonts'));
 const cover = await loadCover(mat(MATERIALS.cover));
 const audio = new Audio(path.join(root, 'build/analysis.json'), mat(MATERIALS.audio));
 const K = Number(args.scale || 1); // 1 = 1920x1080, 2 = 3840x2160
-const R = new Renderer({ cover, audio, lrcText: fs.readFileSync(mat(MATERIALS.lyrics), 'utf8'), scale: K });
+const lrcText = fs.readFileSync(mat(MATERIALS.lyrics), 'utf8');
+// --design theater: the 影絵劇場 shadow-theatre version; default: the classic glitch/HUD version
+const R = args.design === 'theater'
+  ? await Theater.create({ cover, audio, lrcText, scale: K, derivedDir: path.join(root, 'assets/derived') })
+  : new Renderer({ cover, audio, lrcText, scale: K });
 
 if (args.stills) {
   const outdir = args.outdir || path.join(root, 'build/stills');

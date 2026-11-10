@@ -90,6 +90,8 @@ export const FONTS = {
   SC: 'NotoSansSC-Medium.ttf',
   SCBold: 'NotoSansSC-Bold.ttf',
   SerifSC: 'NotoSerifSC-Black.ttf',
+  SerifSCSemi: 'NotoSerifSC-SemiBold.ttf',
+  Courier: 'CourierPrime-Bold.ttf',
   Antonio: 'Antonio-Light.ttf',
   AntonioBold: 'Antonio-Bold.ttf',
   Bebas: 'BebasNeue-Regular.ttf',

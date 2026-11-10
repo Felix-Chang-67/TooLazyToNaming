@@ -21,6 +21,7 @@ dl sharetechmono/ShareTechMono-Regular.ttf          ShareTechMono-Regular.ttf
 dl "notosanssc/NotoSansSC%5Bwght%5D.ttf"            NotoSansSC-VF.ttf
 dl "notoserifsc/NotoSerifSC%5Bwght%5D.ttf"          NotoSerifSC-VF.ttf
 dl "antonio/Antonio%5Bwght%5D.ttf"                  Antonio-VF.ttf
+dl courierprime/CourierPrime-Bold.ttf               CourierPrime-Bold.ttf
 
 inst() { # <variable font> <wght> <output name>
   if [[ -s "assets/fonts/$3" ]]; then echo "skip  $3"; return; fi
@@ -31,5 +32,6 @@ inst() { # <variable font> <wght> <output name>
 inst NotoSansSC-VF.ttf  500 NotoSansSC-Medium.ttf
 inst NotoSansSC-VF.ttf  700 NotoSansSC-Bold.ttf
 inst NotoSerifSC-VF.ttf 900 NotoSerifSC-Black.ttf
+inst NotoSerifSC-VF.ttf 600 NotoSerifSC-SemiBold.ttf
 inst Antonio-VF.ttf     300 Antonio-Light.ttf
 inst Antonio-VF.ttf     700 Antonio-Bold.ttf

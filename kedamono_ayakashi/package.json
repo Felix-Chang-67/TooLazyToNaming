@@ -8,7 +8,8 @@
     "analyze": "python3 -I src/analyze_audio.py materials/KEDAMONO_AYAKASHI_24bit_48kHz.wav build/analysis.json 60",
     "stills": "node src/render.mjs --stills",
     "render": "./scripts/render_video.sh",
-    "cover": "node src/cover.mjs"
+    "cover": "node src/cover_theater.mjs",
+    "cover:classic": "node src/cover.mjs"
   },
   "license": "UNLICENSED",
   "dependencies": {

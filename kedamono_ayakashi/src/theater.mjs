@@ -89,8 +89,88 @@ const DIR = {
     ],
     exit: 'away',
   },
+  // ---- verse 2: a ruled rulebook page is printed on the paper
+  18: { ...V, font: 'KakuBlack', size: 90, rows: [[{ r: [0, 4], redact: true }, { r: [4, 10] }], [{ r: [10, 22] }]], y: 340, rowGap: 150 },
+  19: { ...V, font: 'KakuBlack', size: 88, rows: [[{ r: [0, 10] }], [{ r: [10, 19] }]], y: 270, rowGap: 135, hold: true },
+  20: { ...V, font: 'Dela', size: 200, enter: 'slam', kind: 'red', x: SC.cx - 300, y: 640, impact: { amp: 10, flash: 0.15 } },
+  21: { ...V, font: 'KakuBlack', size: 90, rows: [[{ r: [0, 12] }], [{ r: [12, 19] }]], y: 290, rowGap: 145 },
+  22: { font: 'KakuBlack', size: 82, layout: 'bubbles', bubble: { x: 640, y: 320, tail: 1 }, hold: true },
+  23: { font: 'KakuBlack', size: 82, layout: 'bubbles', bubble: { x: 1240, y: 600, tail: -1 } },
+  // ---- I hate me.: strobing lights throw several shadows of the line
+  24: { font: 'Courier', size: 150, enter: 'cut', stagger: 0.02, y: 470, multi: 3, z: 0.04 },
+  25: { font: 'Courier', size: 160, enter: 'cut', stagger: 0.02, y: 470, multi: 6, z: 0.07, exit: 'cut' },
+  // ---- pre-chorus 2: the stairs go up, the cards drop in from above
+  26: { font: 'KakuBlack', size: 96, layout: 'stairs', up: true, enter: 'drop', exit: 'away', echo: [5, 9] },
+  27: { font: 'KakuBlack', size: 96, layout: 'cards', fromTop: true, cards: [{ r: [0, 6], at: 0, px: SC.cx - 330 }, { r: [6, 10], px: SC.cx + 330 }] },
+  // ---- bridge
+  28: { ...V, font: 'Dot', size: 112, y: 350, holdZ: 0.02, jitterZ: true },
+  29: { ...V, font: 'KakuBlack', size: 96, rows: [[{ r: [0, 12] }], [{ r: [12, 16], at: 2.1 }]], y: 330, rowGap: 160, tangle: true },
+  30: { ...V, rows: [[{ r: [0, 16] }], [{ r: [16, 19], at: 3.0, size: 150, kind: 'red' }]], y: 172, rowGap: 590 },
+  // ---- chorus 2 (no stop this time: the band is already in)
+  31: {
+    ...CH,
+    rows: [[{ r: [0, 3], at: 0 }, { r: [3, 7], at: 1.0 }], [{ r: [7, 11], at: 2.5, size: 220, tear: true, impact: { amp: 18, flash: 0.3, col: RED } }]],
+    y: 300,
+    rowGap: 235,
+    impact: { amp: 18, flash: 0.45, col: RED },
+  },
+  32: {
+    ...CH,
+    rows: [[{ r: [0, 4] }, { r: [4, 11], kind: 'proj', font: 'Dot', size: 118 }, { r: [11, 13] }], [{ r: [13, 16], at: 2.1, size: 150, impact: { amp: 12, flash: 0.25 } }]],
+    y: 330,
+    rowGap: 215,
+  },
+  33: {
+    ...CH,
+    rows: [[{ r: [0, 4] }, { r: [4, 10], at: 0.75, kind: 'proj', font: 'Dot', size: 112, dialog: true }], [{ r: [10, 14], at: 2.3 }, { r: [14, 17], at: 2.75, kind: 'stamp' }, { r: [17, 18], at: 3.0 }]],
+    y: 330,
+    rowGap: 230,
+  },
+  34: {
+    font: 'Dela',
+    size: 84,
+    layout: 'tags',
+    tags: [
+      { r: [0, 5], at: 0, x: 600, y: 320 },
+      { r: [6, 11], at: B2, x: 1330, y: 310 },
+      { r: [12, 15], at: 2 * B2, x: 720, y: 610 },
+      { r: [16, 20], at: 3 * B2, x: 1250, y: 620 },
+    ],
+    exit: 'away',
+  },
+  // ---- outro: the 脳細胞 tags hang on a growing neural net, then the chant takes centre stage
+  35: {
+    font: 'Dela',
+    size: 78,
+    layout: 'tags',
+    net: true,
+    tags: [
+      { r: [0, 3], at: 0, x: 430, y: 330 },
+      { r: [4, 7], at: B2, x: 1470, y: 310 },
+      { r: [8, 11], at: 2 * B2, x: 560, y: 670 },
+      { r: [12, 15], at: 3 * B2, x: 1380, y: 680 },
+    ],
+    exit: 'away',
+  },
+  36: {
+    font: 'Dela',
+    size: 82,
+    layout: 'tags',
+    net: true,
+    tags: [
+      { r: [0, 3], at: 0, x: 960, y: 270 },
+      { r: [4, 7], at: B2, x: 330, y: 520 },
+      { r: [8, 11], at: 2 * B2, x: 1600, y: 500 },
+      { r: [12, 16], at: 3 * B2, x: 960, y: 700 },
+    ],
+    exit: 'away',
+  },
+  37: { ...CH, size: 140, rows: [[{ r: [0, 3], at: 0 }, { r: [4, 8], at: B2, kind: 'leak' }]], y: 450, perSeg: 12, leakCol: WARM },
+  38: { ...CH, size: 150, rows: [[{ r: [0, 3], at: 0 }, { r: [4, 8], at: B2, kind: 'leak' }]], y: 450, perSeg: 14, leakCol: WARM },
+  39: { ...CH, size: 160, rows: [[{ r: [0, 3], at: 0 }, { r: [4, 8], at: B2, kind: 'leak' }]], y: 450, perSeg: 16, leakCol: WARM },
 };
 const DEFAULT = { ...V, y: 470, rowGap: 150, x: SC.cx, maxW: SC.w - 160 };
+const FINAL_HIT = beat(394); // last hit before the music stops (~167.77 s)
 
 // ------------------------------------------------------------------------------------- sections
 function sections(L) {
@@ -142,9 +222,48 @@ export class Theater {
     this.noisePat = this.noise.map((c) => this.o.createPattern(c, 'repeat'));
     this.vignette = makeVignette(k);
     this.paperTex = this.makePaper(k);
+    this.staticPat = this.noise.map((c) => this.s.createPattern(c, 'repeat'));
+    this.coverSepia = this.tintCover('rgb(236,204,150)');
     this.beast = this.prepBeast(beast);
     this.prepare();
+    this.buildNet();
     this.buildImpacts();
+  }
+
+  tintCover(col) {
+    const [c, x] = canvas(1024, 1024);
+    x.drawImage(this.cv.small, 0, 0, 1024, 1024);
+    x.globalCompositeOperation = 'multiply';
+    x.fillStyle = col;
+    x.fillRect(0, 0, 1024, 1024);
+    return c;
+  }
+
+  /** the string web of the gap / outro; the outro tags hang from some of its knots */
+  buildNet() {
+    const nodes = [];
+    for (const i of [35, 36]) for (const tg of DIR[i].tags) nodes.push({ x: tg.x, y: tg.y - 72, k: nodes.length });
+    let tries = 0;
+    while (nodes.length < 24 && tries < 8000) {
+      tries++;
+      const x = rr(SC.x0 + 50, SC.x1 - 50, 'nx', tries);
+      const y = rr(SC.y0 + 40, SC.y1 - 70, 'ny', tries);
+      if (nodes.every((n) => Math.hypot(n.x - x, n.y - y) > 210)) nodes.push({ x, y, k: nodes.length });
+    }
+    const edges = [];
+    const seen = new Set();
+    for (const a of nodes) {
+      const near = nodes.filter((b) => b !== a).sort((p, q) => Math.hypot(p.x - a.x, p.y - a.y) - Math.hypot(q.x - a.x, q.y - a.y));
+      for (const b of near.slice(0, 3)) {
+        const key = a.k < b.k ? `${a.k}-${b.k}` : `${b.k}-${a.k}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        edges.push({ a, b, j: edges.length, sag: rr(10, 45, 'sg', edges.length) });
+      }
+    }
+    // some knots hang from the top of the screen
+    for (const n of nodes) n.hang = n.y < SC.y0 + 330 && rnd('hg', n.k) < 0.6;
+    this.net = { nodes, edges };
   }
 
   // ------------------------------------------------------------------------------- preparation
@@ -213,6 +332,10 @@ export class Theater {
         l.items = (d.cards || d.tags).map((c) => ({ ...c, seg: mk({ r: c.r, at: c.at }) }));
         l.items.forEach((it) => (it.card = this.makeCard(it.seg, d.layout === 'tags')));
         l.rows = [];
+      } else if (d.layout === 'bubbles') {
+        l.items = [{ ...d.bubble, seg: mk({ r: [0, total], at: 0 }) }];
+        l.items[0].card = this.makeBubble(l.items[0].seg, d.bubble.tail);
+        l.rows = [];
       } else if (d.layout === 'stairs') {
         l.stairs = this.prepStairs(l, cps, est);
         l.rows = [];
@@ -256,7 +379,8 @@ export class Theater {
         start = est(k + 1);
         return;
       }
-      pos.push({ ch, x: 390 + p * 150, y: 210 + p * 64, at: start + j * 0.09, phrase, i: pos.length });
+      const up = l.d.up;
+      pos.push({ ch, x: up ? 300 + p * 150 : 390 + p * 150, y: up ? 790 - p * 64 : 210 + p * 64, at: start + j * 0.09, phrase, i: pos.length });
       const comma = '、，,。'.includes(ch);
       p += comma ? 0.55 : 1;
       j++;
@@ -309,6 +433,18 @@ export class Theater {
       if (d.layout === 'cards') for (const it of l.items.slice(1)) imp.push({ t: l.t0 + it.seg.at + 0.38, amp: 12, flash: 0.15 });
     });
     imp.push({ t: L[10].t0, amp: 18, flash: 1.0 }); // the bulb bursts
+    imp.push({ t: beat(145), amp: 6, flash: 0.2, col: COLD }); // slide projector clicks on
+    imp.push({ t: beat(149), amp: 10, flash: 0.25 }); // the projected beast comes alive
+    imp.push({ t: L[18].t0, amp: 12, flash: 0.35 });
+    imp.push({ t: L[26].t0, amp: 12, flash: 0.3, col: RED });
+    imp.push({ t: this.cancelClickTime(L[28]), amp: 9, flash: 0.25, col: COLD });
+    imp.push({ t: L[31].t0, amp: 18, flash: 0.5, col: RED });
+    imp.push({ t: L[34].t1, amp: 10, flash: 0.3, col: RED });
+    imp.push({ t: 133.56, amp: 18, flash: 0.5, col: RED }); // outro bass drop
+    imp.push({ t: L[39].t1, amp: 12, flash: 0.35 });
+    imp.push({ t: FINAL_HIT, amp: 14, flash: 1.0 });
+    for (const i of [37, 38, 39]) for (const seg of L[i].rows[0].segs) imp.push({ t: L[i].t0 + seg.at, amp: L[i].d.perSeg, flash: 0.2, col: RED });
+    for (const i of [24, 25]) imp.push({ t: L[i].t0, amp: 12 + (i - 24) * 6, flash: 0.3, col: i === 25 ? RED : undefined });
     imp.push({ t: beat(89), amp: 12, flash: 0.25, col: RED }); // pre-chorus hit
     for (const it of L[13].rows[1].segs) imp.push({ t: L[13].t0 + it.at, amp: 18, flash: 0.3, col: RED });
     imp.sort((a, b) => a.t - b.t);
@@ -372,12 +508,83 @@ export class Theater {
       col = RED;
       I = 1.02 + 0.32 * kick;
       R = 1350;
+    } else if (t < L[18].t0) {
+      // interlude: the bulb dies, a slide projector takes over, then the bulb comes back
+      const u = t - L[17].t1;
+      if (t < beat(145)) {
+        col = RED;
+        I = u < 0.07 ? 1 : u < 0.13 ? 0.08 : u < 0.2 ? 0.7 : Math.max(0, 0.7 - (u - 0.2) * 2.5);
+      } else if (t < beat(149)) I = 0;
+      else {
+        I = smooth(beat(149) - 0.05, beat(149) + 0.4, t) * (1 + 0.06 * kick);
+        const amp = 110 + 260 * smooth(beat(165), L[18].t0, t);
+        x = SC.cx + amp * Math.sin((t / 2.2) * TAU);
+      }
+    } else if (t < L[24].t0) {
+      I = 1 + 0.05 * kick; // verse 2
+      if (t >= L[20].t0 && t < L[20].t1) I *= 0.9;
+    } else if (t < L[26].t0) {
+      I = 0.45; // break 2: the main bulb dims, strobing lights do the work (aux)
+      R = 900;
+    } else if (t < L[28].t0) {
+      col = RED; // pre-chorus 2: faster beacon
+      const ang = ((t - L[26].t0) / (SPB * 2)) * TAU;
+      x = SC.cx + 600 * Math.cos(ang);
+      y = SC.cy + 190 * Math.sin(ang);
+      I = 0.5 + 0.7 * this.au.pulse(t, 5);
+      R = 1000;
+    } else if (t < L[29].t0) {
+      I = 0.42 + 0.22 * rnd(Math.floor(t * 20), 'brown'); // the noise: the bulb browns out
+    } else if (t < L[30].t0) {
+      I = 0.95;
+    } else if (t < L[31].t0) {
+      I = 0.5; // the film plays
+      R = 900;
+    } else if (t < L[34].t1) {
+      col = RED; // chorus 2
+      I = 1.05 + 0.34 * kick;
+      R = 1350;
+    } else if (t < L[35].t0) {
+      col = RED; // the gap: the web grows under a pulsing light
+      I = 0.35 + 0.8 * this.au.pulse(t, 4);
+      x = SC.cx + 300 * Math.sin((t / 1.7) * TAU);
+    } else if (t < L[39].t1) {
+      col = RED; // outro
+      I = 0.85 + 0.38 * kick + 0.15 * smooth(L[37].t0, L[39].t1, t);
+      R = 1300;
+    } else if (t < FINAL_HIT) {
+      // ending: the warm bulb swings wider and wider
+      const amp = lerp(120, 460, smooth(L[39].t1, FINAL_HIT, t));
+      x = SC.cx + amp * Math.sin((t / 1.9) * TAU);
+      y = SC.cy - 90 + 30 * Math.cos((t / 0.95) * TAU);
+      I = 1 + 0.08 * kick;
     } else {
-      const u = t - L[17].t1; // the bulb dies at the end of the chorus
-      col = RED;
-      I = u < 0.07 ? 1 : u < 0.13 ? 0.08 : u < 0.2 ? 0.7 : Math.max(0, 0.7 - (u - 0.2) * 2.5);
+      const u = t - FINAL_HIT; // and bursts on the last hit
+      I = u < 0.05 ? 3.2 : 0;
     }
-    return { x, y, I, col, R };
+    const aux = [];
+    for (const i of [24, 25]) {
+      const l = L[i];
+      if (t < l.t0 || t >= l.t1) continue;
+      const n = l.d.multi;
+      const b = this.au.beat(t);
+      for (let j = 0; j < n; j++) {
+        const on = (b.idx + j) % n === 0 || (i === 25 && (b.idx + j) % 3 === 0);
+        const p = on ? Math.exp(-b.phase * 2.6) : 0.08;
+        aux.push({
+          x: SC.x0 + ((j + 0.5) / n) * SC.w,
+          y: SC.cy + (j % 2 ? 160 : -200),
+          I: (i === 25 ? 0.95 : 0.8) * p,
+          col: i === 25 && j % 2 ? RED : WARM,
+          R: 820,
+        });
+      }
+    }
+    return { x, y, I, col, R, aux };
+  }
+
+  cancelClickTime(l) {
+    return Audio.beatTime(Math.ceil((l.t0 + 1.1 - Audio.beatTime(0)) / SPB));
   }
 
   /** small flicker each time a typewriter key lands */
@@ -434,6 +641,7 @@ export class Theater {
     this.leakQ = [];
     this.projQ = [];
     this.inkQ = [];
+    this.paperQ = [];
     this.subs = [];
     s.setTransform(k, 0, 0, k, 0, 0);
     s.globalAlpha = 1;
@@ -454,6 +662,11 @@ export class Theater {
     for (const l of L) {
       if (t < l.t0 - 0.6 || t > l.tEnd + 0.7) continue;
       this.drawLine(l, t);
+    }
+    for (const fn of this.paperQ) {
+      s.save();
+      fn(s);
+      s.restore();
     }
     this.compositeShadows(s);
     for (const [q, op] of [[this.tintQ, 'multiply'], [this.leakQ, 'lighter'], [this.projQ, 'screen'], [this.inkQ, 'source-over']]) {
@@ -524,6 +737,17 @@ export class Theater {
     const Lt = this.lt;
     s.fillStyle = '#0c0806';
     s.fillRect(SC.x0, SC.y0, SC.w, SC.h);
+    for (const A of Lt.aux || []) {
+      if (A.I < 0.01) continue;
+      const g = s.createRadialGradient(A.x, A.y, 0, A.x, A.y, A.R);
+      g.addColorStop(0, rgba(A.col, 0.9 * A.I));
+      g.addColorStop(1, rgba(A.col, 0));
+      s.save();
+      s.globalCompositeOperation = 'lighter';
+      s.fillStyle = g;
+      s.fillRect(SC.x0, SC.y0, SC.w, SC.h);
+      s.restore();
+    }
     if (Lt.I <= 0.001) return;
     const I = Lt.I;
     const g = s.createRadialGradient(Lt.x, Lt.y, 0, Lt.x, Lt.y, Lt.R);
@@ -595,9 +819,16 @@ export class Theater {
       if (dt < 0) break;
       if (dt < 0.8) shake += ev.amp * Math.exp(-dt * 8);
     }
-    const chorus = t >= beat(105) && t < this.L[17].t1;
-    if (chorus) shake += 6 * this.au.hit(this.au.kicks, t, 14, 0.25, 0.3);
-    const zoom = 1 + (chorus ? 0.075 * smooth(beat(105), beat(105) + 0.6, t) : 0) + 0.006 * Math.sin(t * 0.37);
+    const L = this.L;
+    const c1 = t >= beat(105) && t < L[17].t1;
+    const c2 = t >= L[31].t0 && t < L[34].t1;
+    const outro = t >= L[34].t1 && t < L[39].t1;
+    if (c1 || c2 || outro) shake += (outro ? 8 : 6) * this.au.hit(this.au.kicks, t, 14, 0.25, 0.3);
+    let push = 0;
+    if (c1) push = 0.075 * smooth(beat(105), beat(105) + 0.6, t);
+    if (c2) push = 0.075 * smooth(L[31].t0, L[31].t0 + 0.4, t);
+    if (outro) push = 0.05 + 0.06 * smooth(L[37].t0, L[39].t1, t);
+    const zoom = 1 + push + 0.006 * Math.sin(t * 0.37);
     return {
       x: noise1(t * 30, 11) * shake + noise1(t * 0.6, 12) * 5 + (rnd(Math.floor(t * 24), 'gw') - 0.5) * 0.8,
       y: noise1(t * 30, 13) * shake + noise1(t * 0.5, 14) * 4 + (rnd(Math.floor(t * 24), 'gh') - 0.5) * 0.8,
@@ -633,7 +864,7 @@ export class Theater {
     o.drawImage(this.vignette, 0, 0, W, H);
     this.drawSubs(o, t);
     this.drawChrome(o, t);
-    const fade = 1 - smooth(0, 0.06, t);
+    const fade = Math.max(1 - smooth(0, 0.06, t), smooth(FINAL_HIT + 0.05, FINAL_HIT + 0.5, t));
     if (fade > 0) {
       o.globalAlpha = fade;
       o.fillStyle = '#000';
@@ -656,6 +887,24 @@ export class Theater {
     if (t >= L[10].t0 && t < L[11].t0 + 0.6) this.shards(t, L[10]);
     if (t >= L[11].t0 - 0.2 && t < L[13].t0 + 0.2) this.railings(t, L[11], L[13]);
     if (t >= beat(105) - 0.05 && t < L[17].t1 + 0.4) this.chorusBeast(t, L[17]);
+    if (t >= L[17].t1 && t < L[18].t0 + 0.1) this.interlude(t);
+    if (t >= L[18].t0 - 0.4 && t < L[23].t1) this.rulebook(t, L[18], L[23]);
+    if (t >= L[19].t0 - 0.3 && t < L[20].t1 + 0.6) {
+      this.questions(t, L[19], L[20]);
+      this.turnBeast(t, L[19], L[20]);
+    }
+    if (t >= L[21].t0 && t < L[21].t1 + 0.4) this.shoes(t, L[21]);
+    if (t >= L[26].t0 - 0.2 && t < L[28].t0) this.railings(t, L[26], L[28], -1);
+    if (t >= L[28].t0 - 0.15 && t < L[28].t1 + 0.05) this.staticNoise(t, L[28]);
+    if (t >= L[29].t0 && t < L[29].t1 + 0.3) this.ruleStrings(t, L[29]);
+    if (t >= L[30].t0 - 0.1 && t < L[30].t1 + 0.05) this.filmReel(t, L[30]);
+    if (t >= L[31].t0 - 0.05 && t < L[34].t1 + 0.4) {
+      this.burn(t, L[31].t0, L[34].t1);
+      this.chorusBeasts(t, L[31].t0, L[34].t1);
+    }
+    if (t >= L[34].t1 && t < L[39].t1 + 0.4) this.web(t);
+    if (t >= L[37].t0 && t < L[39].t1 + 0.3) this.outroBeast(t);
+    if (t >= L[39].t1 - 0.1 && t < FINAL_HIT + 0.1) this.ending(t);
   }
 
   dust(t) {
@@ -676,7 +925,7 @@ export class Theater {
   }
 
   /** draw the beast (cover hand-shadow) as a puppet; mode shadow | red */
-  beastAt({ X, Y, scale, z = 0, jaw = 0, flip = false, alpha = 1, brush = null, clip = null, mode = 'shadow' }) {
+  beastAt({ X, Y, scale, z = 0, jaw = 0, flip = false, alpha = 1, brush = null, clip = null, mode = 'shadow', sx = 1 }) {
     const B = this.beast;
     const p = this.project(X, Y, z);
     const m = p.m * scale;
@@ -691,6 +940,7 @@ export class Theater {
       }
       c.translate(p.x, p.y);
       if (flip) c.scale(-1, 1);
+      if (sx !== 1) c.scale(Math.abs(sx) < 0.02 ? 0.02 : sx, 1);
       c.scale(m, m);
       c.translate(-ax, -ay);
       c.drawImage(red ? B.headRed : B.head, 0, 0);
@@ -918,14 +1168,14 @@ export class Theater {
     }
   }
 
-  railings(t, l11, l13) {
+  railings(t, l11, l13, dir = 1) {
     // stair railing shadows sliding past the beacon (we are going down the emergency stairs)
     const a = smooth(l11.t0 - 0.2, l11.t0 + 0.3, t) * (1 - smooth(l13.t0 - 0.25, l13.t0, t));
     if (a <= 0) return;
-    const slope = 64 / 150;
-    const off = ((t - l11.t0) * 170) % 460;
-    for (let k = -1; k < 3; k++) {
-      const y0 = SC.y0 - 200 - off + k * 460;
+    const slope = (dir * 64) / 150;
+    const off = (((t - l11.t0) * (dir > 0 ? 170 : 240)) % 460) * dir;
+    for (let k = -2; k < 3; k++) {
+      const y0 = SC.y0 - 200 - off + k * 460 + (dir < 0 ? 380 : 0);
       const p = this.project(SC.cx, y0, 0.22);
       this.cast(p.blur, a * 0.8, (c) => {
         c.lineWidth = 20;
@@ -950,6 +1200,523 @@ export class Theater {
     this.beastAt({ X: 1610, Y: 470 + Math.sin(t * 1.7) * 14, scale: 0.5, z, jaw: -0.06 - 0.32 * kick, alpha: 0.5 * inn * out });
   }
 
+
+  // ------------------------------------------------------------------------------ interlude
+  interlude(t) {
+    const L = this.L;
+    const t1 = L[18].t0;
+    const tOn = beat(145);
+    const tAlive = beat(149);
+    const tMany = beat(157);
+    const tMerge = beat(165);
+    const Sz = 700;
+    const k = Math.floor(t * 24);
+    // a slide projector throws the album art onto the paper...
+    const pa = smooth(tOn, tOn + 0.04, t) * (1 - smooth(tAlive, tAlive + SPB * 2, t));
+    if (pa > 0.01) {
+      const fl = 0.84 + 0.16 * rnd(k, 'pfl');
+      this.projQ.push((s) => {
+        s.globalAlpha = pa * fl;
+        s.drawImage(this.cv.small, SC.cx - Sz / 2, SC.cy - Sz / 2, Sz, Sz);
+        s.globalAlpha = pa * 0.45;
+        s.fillStyle = '#ffffff';
+        for (let i = 0; i < 3; i++) if (rnd(k, i, 'scr') < 0.6) s.fillRect(SC.cx - Sz / 2 + rnd(k, i, 'sx') * Sz, SC.cy - Sz / 2, 1.5, Sz);
+      });
+    }
+    // ...and the beast in it comes alive as a real shadow when the bulb returns
+    const sc = Sz / 2048;
+    const X0 = SC.cx - Sz / 2 + 1000 * sc;
+    const Y0 = SC.cy - Sz / 2 + 1100 * sc;
+    const ba = smooth(tAlive - 0.1, tAlive + SPB, t) * (1 - smooth(t1 - 0.2, t1, t));
+    if (ba <= 0) return;
+    const b = this.au.beat(t);
+    const bite = (n) => -0.05 - 0.3 * Math.exp(-b.phase * 5) * ((b.idx + n) % 2 === 0 ? 1 : 0.2);
+    const rush = ez(E.inC, (t - (t1 - 1.6)) / 1.6);
+    const spread = smooth(tMany, tMany + SPB * 2, t) * (1 - smooth(tMerge, tMerge + SPB * 4, t));
+    if (spread > 0.01) {
+      // two more lights, two more beasts, biting in turn
+      this.beastAt({ X: X0 - 560 * spread, Y: Y0 + 20, scale: sc * 0.85, z: 0.14, jaw: bite(1), alpha: ba * 0.7 * spread, flip: true });
+      this.beastAt({ X: X0 + 560 * spread, Y: Y0 + 20, scale: sc * 0.85, z: 0.14, jaw: bite(1), alpha: ba * 0.7 * spread });
+    }
+    this.beastAt({ X: X0, Y: Y0 + Math.sin(t * 2) * 8, scale: sc, z: 0.02 + rush * 0.55, jaw: bite(0), alpha: ba });
+  }
+
+  // ------------------------------------------------------------------------------ verse 2
+  rulebook(t, l18, l23) {
+    const a = smooth(l18.t0 - 0.3, l18.t0 + 0.3, t) * (1 - smooth(l23.t1 - 0.4, l23.t1, t));
+    if (a <= 0) return;
+    this.paperQ.push((s) => {
+      s.globalCompositeOperation = 'multiply';
+      s.globalAlpha = a * 0.6;
+      s.strokeStyle = 'rgb(70,52,36)';
+      s.lineWidth = 1.4;
+      for (let y = SC.y0 + 78; y < SC.y1 - 20; y += 58) {
+        s.beginPath();
+        s.moveTo(SC.x0 + 30, y);
+        s.lineTo(SC.x1 - 30, y);
+        s.stroke();
+      }
+      s.strokeStyle = 'rgb(176,40,28)';
+      s.lineWidth = 2.4;
+      s.beginPath();
+      s.moveTo(SC.x0 + 170, SC.y0 + 16);
+      s.lineTo(SC.x0 + 170, SC.y1 - 16);
+      s.stroke();
+      s.fillStyle = 'rgb(70,52,36)';
+      s.font = '26px Courier';
+      s.textBaseline = 'alphabetic';
+      for (let i = 0; i < 13; i++) s.fillText(`§${String(i + 1).padStart(2, '0')}`, SC.x0 + 50, SC.y0 + 70 + i * 58);
+    });
+  }
+
+  questions(t, l19, l20) {
+    const a = smooth(l19.t0 - 0.2, l19.t0 + 0.3, t) * (1 - smooth(l20.t1 - 0.2, l20.t1 + 0.4, t));
+    if (a <= 0) return;
+    for (let i = 0; i < 7; i++) {
+      const u = t - (l19.t0 + i * 0.2);
+      if (u < 0) continue;
+      const x = SC.x0 + 120 + ((i * 0.618 + 0.13) % 1) * (SC.w - 240);
+      const len = rr(150, 430, 'ql', i);
+      const z = rr(0.04, 0.32, 'qz', i);
+      const drop = ez(E.outB, u / 0.5, 2);
+      const sw = 0.4 * Math.exp(-u * 1.3) * Math.sin(u * rr(5, 8, 'qw', i) + i) + 0.05 * Math.sin(t * 2 + i);
+      const top = [x, SC.y0 - 20];
+      const p = this.project(x + Math.sin(sw) * len * drop, top[1] + Math.cos(sw) * len * drop, z);
+      const size = rr(100, 170, 'qs', i);
+      this.cast(p.blur, a * 0.8 * p.a, (c) => {
+        c.lineWidth = 2.5;
+        c.beginPath();
+        c.moveTo(top[0], top[1]);
+        c.lineTo(p.x, p.y - size * 0.42 * p.m);
+        c.stroke();
+        c.translate(p.x, p.y);
+        c.rotate(sw);
+        c.scale(p.m, p.m);
+        c.font = `${Math.round(size)}px AntonioBold`;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText('?', 0, 0);
+      });
+    }
+  }
+
+  turnBeast(t, l19, l20) {
+    // the beast prowls in on the right, and on "なあ" turns round to face the room
+    const a = smooth(l19.t0 - 0.2, l19.t0 + 0.6, t) * (1 - smooth(l20.t1 - 0.1, l20.t1 + 0.4, t));
+    if (a <= 0) return;
+    const turn = ez(E.ioC, (t - l20.t0) / 0.32);
+    const jaw = t >= l20.t0 ? -0.05 - 0.4 * Math.exp(-(t - l20.t0) * 2.5) : -0.04 + 0.04 * Math.sin(t * 9);
+    const walk = lerp(SC.x1 + 200, 1450, ez(E.outC, (t - l19.t0) / 0.9));
+    this.beastAt({ X: walk, Y: 690, scale: 0.3, z: lerp(0.16, 0.02, turn), jaw, alpha: a * 0.92, sx: Math.cos(turn * Math.PI) });
+  }
+
+  shoes(t, l21) {
+    // a pair of shoes walks across the bottom of the screen, one step per beat
+    const seg = l21.rows[1].segs[0];
+    const ts = l21.t0 + seg.at - 0.1;
+    const a = smooth(ts, ts + 0.25, t) * (1 - smooth(l21.t1 - 0.15, l21.t1 + 0.3, t));
+    if (a <= 0) return;
+    const b = Math.max(0, (t - ts) / SPB);
+    const kb = Math.floor(b);
+    const fr = b - kb;
+    const stride = 240;
+    for (const f of [0, 1]) {
+      const done = kb > f ? Math.floor((kb - f + 1) / 2) : 0;
+      const moving = kb % 2 === f;
+      const prog = moving ? E.ioC(fr) : 0;
+      const x = SC.x0 + 120 + f * stride + (done + prog) * 2 * stride;
+      if (x > SC.x1 + 200) continue;
+      const y = SC.y1 - 78 - (moving ? Math.sin(fr * Math.PI) * 60 : 0);
+      const p = this.project(x, y, 0.06);
+      this.cast(p.blur, a * 0.92, (c) => {
+        c.translate(p.x, p.y);
+        c.rotate(moving ? -0.18 * Math.sin(fr * Math.PI) : 0);
+        c.scale(p.m * 1.15, p.m * 1.15);
+        c.beginPath();
+        c.moveTo(-78, 22);
+        c.lineTo(66, 22);
+        c.quadraticCurveTo(88, 20, 84, 4);
+        c.quadraticCurveTo(72, -14, 30, -20);
+        c.lineTo(8, -44);
+        c.lineTo(-32, -52);
+        c.quadraticCurveTo(-64, -54, -76, -22);
+        c.closePath();
+        c.fill();
+        c.fillRect(-82, 22, 170, 9);
+      });
+    }
+  }
+
+  makeBubble(seg, tail) {
+    const k = this.k;
+    const padX = seg.size * 0.55;
+    const padY = seg.size * 0.42;
+    const w = Math.ceil(seg.L.width + padX * 2);
+    const bh = Math.ceil(seg.size + padY * 2);
+    const h = bh + 70;
+    const [c, x] = scaledCanvas(w, h, k);
+    x.fillStyle = '#000';
+    x.beginPath();
+    x.roundRect(0, 0, w, bh, bh * 0.45);
+    x.fill();
+    x.beginPath();
+    const tx = tail > 0 ? w * 0.72 : w * 0.28;
+    x.moveTo(tx - 34, bh - 4);
+    x.lineTo(tx + tail * 70, h);
+    x.lineTo(tx + 34, bh - 4);
+    x.closePath();
+    x.fill();
+    x.globalCompositeOperation = 'destination-out';
+    drawGlyphs(x, seg.L, w / 2, bh / 2 + seg.size * 0.04, { fill: '#000' });
+    return { c, w, h, bh };
+  }
+
+  drawBubbles(l, t, v) {
+    const it = l.items[0];
+    const u = t - l.t0;
+    if (u < 0) return;
+    const pop = ez(E.outB, u / 0.32, 2.6);
+    const C = it.card;
+    const k = Math.floor(t * 18);
+    const shiver = (rnd(k, l.i) - 0.5) * 6;
+    const p = this.project(it.x + shiver, it.y, 0.04 + v * 0.45);
+    const dim = l.d.hold ? 1 - 0.4 * smooth(this.L[l.i + 1].t0, this.L[l.i + 1].t0 + 0.3, t) : 1;
+    this.cast(p.blur, clamp(u / 0.06) * (1 - v) * dim * p.a, (c) => {
+      c.translate(p.x, p.y);
+      c.scale(p.m * pop, p.m * pop);
+      c.drawImage(C.c, -C.w / 2, -C.bh / 2, C.w, C.h);
+    });
+  }
+
+  // ------------------------------------------------------------------------------ bridge
+  staticNoise(t, l) {
+    // the projector loses its signal: TV static over the paper, and a CANCEL that does nothing
+    const a = smooth(l.t0 - 0.12, l.t0 + 0.12, t) * (1 - smooth(l.t1 - 0.12, l.t1, t));
+    if (a <= 0) return;
+    const u = t - l.t0;
+    const tc = this.cancelClickTime(l) - l.t0;
+    const failed = u >= tc;
+    const k = Math.floor(t * 30);
+    const pop0 = ez(E.outB, (u - 0.1) / 0.35, 1.6);
+    const sh0 = failed ? Math.exp(-(u - tc) * 6) * 24 * noise1(t * 40, 9) : 0;
+    const hole = pop0 > 0 ? (() => {
+      const sc = lerp(0.85, 1, pop0);
+      const [w, h] = [820 * sc, 206 * sc];
+      return [SC.cx + sh0 - w / 2, 600 + 103 - h / 2, w, h];
+    })() : null;
+    this.paperQ.push((s) => {
+      s.globalCompositeOperation = 'screen';
+      s.globalAlpha = a * (0.34 + (failed ? 0.2 : 0) + 0.08 * rnd(k, 'st'));
+      s.imageSmoothingEnabled = false;
+      if (hole) {
+        s.beginPath();
+        s.rect(SC.x0, SC.y0, SC.w, SC.h);
+        s.rect(...hole);
+        s.clip('evenodd');
+      }
+      s.save();
+      s.scale(3, 3);
+      s.translate(-Math.floor(rnd(k, 'sx') * 384), -Math.floor(rnd(k, 'sy') * 384));
+      s.fillStyle = this.staticPat[k % this.staticPat.length];
+      s.fillRect(0, 0, W / 3 + 400, H / 3 + 400);
+      s.restore();
+      const ry = ((t * 420) % (H + 300)) - 150;
+      const rg = s.createLinearGradient(0, ry - 90, 0, ry + 90);
+      rg.addColorStop(0, 'rgba(220,235,255,0)');
+      rg.addColorStop(0.5, 'rgba(220,235,255,0.22)');
+      rg.addColorStop(1, 'rgba(220,235,255,0)');
+      s.globalAlpha = a;
+      s.fillStyle = rg;
+      s.fillRect(SC.x0, ry - 90, SC.w, 180);
+    });
+    const pop = ez(E.outB, (u - 0.1) / 0.35, 1.6);
+    if (pop <= 0) return;
+    const shake = failed ? Math.exp(-(u - tc) * 6) * 24 * noise1(t * 40, 9) : 0;
+    const dw = 820;
+    const dh = 206;
+    const dx = SC.cx - dw / 2;
+    const dy = 600;
+    const col = failed ? RED : COLD;
+    const p = failed ? 0.99 : 0.99 * ez(E.outC, (u - 0.25) / Math.max(0.2, tc - 0.4));
+    const bw = 168;
+    const bh = 46;
+    const bx = dx + dw - bw - 26;
+    const by = dy + dh - bh - 18;
+    const pressed = u >= tc && u < tc + 0.12;
+    const cu = ez(E.ioC, (u - 0.45) / Math.max(0.2, tc - 0.55));
+    const px = lerp(SC.x1 - 260, bx + bw * 0.62, cu);
+    const py = lerp(SC.y1 - 40, by + bh * 0.6, cu) + (pressed ? 3 : 0);
+    this.projQ.push((s) => {
+      s.globalAlpha = a * clamp(pop * 1.5);
+      s.translate(SC.cx + shake, dy + dh / 2);
+      s.scale(lerp(0.85, 1, pop), lerp(0.85, 1, pop));
+      s.translate(-SC.cx, -(dy + dh / 2));
+      s.fillStyle = rgba(col, 0.16);
+      s.fillRect(dx, dy, dw, dh);
+      s.strokeStyle = rgba(col, 1);
+      s.lineWidth = 2;
+      s.strokeRect(dx, dy, dw, dh);
+      s.fillStyle = rgba(col, 0.9);
+      s.fillRect(dx, dy, dw, 34);
+      text(s, failed ? 'SYSTEM ERROR' : 'NOISE CANCELLING', dx + 16, dy + 18, 'Mono', 20, '#05070c', { tracking: 3 });
+      text(s, failed ? 'ERROR 0x7E: NOISE CANNOT BE CANCELLED' : 'CANCELLING NOISE ...', dx + 24, dy + 72, 'Mono', 24, rgba(col, 1), { tracking: 2 });
+      const pw = dw - 250;
+      s.strokeRect(dx + 24, dy + 100, pw, 24);
+      s.fillStyle = rgba(col, failed && Math.floor(t * 8) % 2 ? 0.45 : 1);
+      s.fillRect(dx + 27, dy + 103, (pw - 6) * p, 18);
+      text(s, `${Math.floor(p * 100)}%`, dx + 24 + pw + 16, dy + 113, 'Mono', 22, rgba(col, 1));
+      s.strokeStyle = rgba(col, 1);
+      s.strokeRect(bx, by + (pressed ? 3 : 0), bw, bh);
+      text(s, 'CANCEL', bx + bw / 2, by + bh / 2 + (pressed ? 3 : 0), 'Mono', 24, rgba(col, 1), { align: 'center', tracking: 4 });
+      if (failed) {
+        s.fillStyle = rgba(RED, 1);
+        s.fillRect(bx + 12, by + bh / 2 - 1, bw - 24, 3);
+      }
+      s.translate(px, py);
+      s.scale(1.7, 1.7);
+      s.beginPath();
+      s.moveTo(0, 0);
+      s.lineTo(0, 26);
+      s.lineTo(7, 19);
+      s.lineTo(12, 30);
+      s.lineTo(17, 28);
+      s.lineTo(12, 17);
+      s.lineTo(21, 17);
+      s.closePath();
+      s.fillStyle = rgba(COLD, 1);
+      s.fill();
+    });
+  }
+
+  ruleStrings(t, l) {
+    // rules drop in as puppet strings and tangle round the words
+    const fade = 1 - smooth(l.t1 - 0.1, l.t1 + 0.3, t);
+    const n = 34;
+    for (let i = 0; i < n; i++) {
+      const ts = l.t0 + 0.2 + (i / n) * (l.t1 - l.t0 - 0.5);
+      const e = ez(E.outQu, (t - ts) / 0.28);
+      if (e <= 0) break;
+      const x0 = rr(SC.x0 - 100, SC.x1 + 100, 'rsx', i);
+      const x1 = rr(SC.x0 - 100, SC.x1 + 100, 'rex', i);
+      const y1 = rr(SC.cy - 80, SC.y1 + 60, 'rey', i);
+      const sag = rr(60, 260, 'rsg', i);
+      const z = rr(0.02, 0.22, 'rz', i);
+      const p0 = this.project(x0, SC.y0 - 20, z);
+      const p1 = this.project(lerp(x0, x1, e), lerp(SC.y0 - 20, y1, e), z);
+      const pc = this.project((x0 + lerp(x0, x1, e)) / 2, (SC.y0 + lerp(SC.y0, y1, e)) / 2 + sag * e, z);
+      this.cast(p0.blur, 0.75 * fade, (c) => {
+        c.lineWidth = rr(1.6, 3.4, 'rw', i);
+        c.beginPath();
+        c.moveTo(p0.x, p0.y);
+        c.quadraticCurveTo(pc.x, pc.y, p1.x, p1.y);
+        c.stroke();
+      });
+    }
+  }
+
+  filmReel(t, l) {
+    // a film leader counting backwards (rewinding)... then "あの時" plays as old footage
+    const play = l.t0 + l.rows[1].segs[0].at;
+    const a = smooth(l.t0, l.t0 + 0.25, t) * (1 - smooth(l.t1 - 0.25, l.t1, t));
+    if (a <= 0) return;
+    const k = Math.floor(t * 24);
+    const cx = SC.cx;
+    const cy = 470;
+    const R = 210;
+    if (t < play) {
+      const u = t - l.t0;
+      const digit = 2 + (Math.floor(u / 0.42) % 8);
+      const sweep = -((u / 0.42) % 1) * TAU;
+      this.projQ.push((s) => {
+        s.globalAlpha = a * (0.8 + 0.2 * rnd(k, 'lf'));
+        s.fillStyle = rgba(COLD, 0.22);
+        s.fillRect(cx - R * 1.45, cy - R * 1.1, R * 2.9, R * 2.2);
+        s.fillStyle = rgba(COLD, 0.35);
+        s.beginPath();
+        s.moveTo(cx, cy);
+        s.arc(cx, cy, R * 1.25, -Math.PI / 2, -Math.PI / 2 + sweep, true);
+        s.closePath();
+        s.fill();
+        s.strokeStyle = rgba(COLD, 0.95);
+        s.lineWidth = 4;
+        for (const r of [R, R * 0.82]) {
+          s.beginPath();
+          s.arc(cx, cy, r, 0, TAU);
+          s.stroke();
+        }
+        s.lineWidth = 2;
+        s.beginPath();
+        s.moveTo(cx - R * 1.45, cy);
+        s.lineTo(cx + R * 1.45, cy);
+        s.moveTo(cx, cy - R * 1.1);
+        s.lineTo(cx, cy + R * 1.1);
+        s.stroke();
+        s.font = `${Math.round(R * 1.3)}px AntonioBold`;
+        s.textAlign = 'center';
+        s.textBaseline = 'middle';
+        s.fillStyle = rgba(COLD, 1);
+        s.fillText(String(digit), cx, cy + 8);
+      });
+    } else {
+      const Sz = 470;
+      this.projQ.push((s) => {
+        s.globalAlpha = a * (0.78 + 0.22 * rnd(k, 'ff')) * smooth(play, play + 0.15, t);
+        s.drawImage(this.coverSepia, cx - Sz / 2 + (rnd(k, 'fx') - 0.5) * 4, cy - Sz / 2 + (rnd(k, 'fy') - 0.5) * 4, Sz, Sz);
+        s.fillStyle = 'rgba(255,240,210,0.7)';
+        for (let i = 0; i < 4; i++) if (rnd(k, i, 'fs') < 0.5) s.fillRect(cx - Sz / 2 + rnd(k, i, 'fsx') * Sz, cy - Sz / 2, 1.4, Sz);
+        for (let i = 0; i < 6; i++) if (rnd(k, i, 'fd') < 0.4) s.fillRect(cx - Sz / 2 + rnd(k, i, 'fdx') * Sz, cy - Sz / 2 + rnd(k, i, 'fdy') * Sz, 3, 3);
+      });
+    }
+  }
+
+  // ------------------------------------------------------------------------------ chorus 2
+  burn(t, t0, t1) {
+    // the paper starts burning in from the edges
+    const p = smooth(t0, t1, t);
+    const out = 1 - smooth(t1 - 0.05, t1 + 0.35, t);
+    if (out <= 0) return;
+    const depth = 16 + 74 * p;
+    const pts = [];
+    const per = 2 * (SC.w + SC.h);
+    const flick = 0.12 * noise1(t * 6, 3);
+    for (let d = 0; d < per; d += 22) {
+      const n = 0.55 + 0.85 * (0.5 + 0.5 * noise1(d * 0.012, 7)) + flick;
+      const off = depth * n;
+      let x;
+      let y;
+      if (d < SC.w) [x, y] = [SC.x0 + d, SC.y0 + off];
+      else if (d < SC.w + SC.h) [x, y] = [SC.x1 - off, SC.y0 + (d - SC.w)];
+      else if (d < 2 * SC.w + SC.h) [x, y] = [SC.x1 - (d - SC.w - SC.h), SC.y1 - off];
+      else [x, y] = [SC.x0 + off, SC.y1 - (d - 2 * SC.w - SC.h)];
+      pts.push([x, y]);
+    }
+    const path = (s) => {
+      s.beginPath();
+      s.rect(SC.x0 - 5, SC.y0 - 5, SC.w + 10, SC.h + 10);
+      pts.forEach(([x, y], i) => (i ? s.lineTo(x, y) : s.moveTo(x, y)));
+      s.closePath();
+    };
+    this.inkQ.push((s) => {
+      s.globalAlpha = out * 0.96;
+      s.fillStyle = '#0d0604';
+      path(s);
+      s.fill('evenodd');
+    });
+    this.leakQ.push((s) => {
+      s.globalAlpha = out * (0.75 + 0.25 * rnd(Math.floor(t * 20), 'eb'));
+      s.strokeStyle = 'rgb(255,120,40)';
+      s.lineWidth = 3.5;
+      s.shadowColor = 'rgba(255,90,20,0.9)';
+      s.shadowBlur = 18 * this.k;
+      s.beginPath();
+      pts.forEach(([x, y], i) => (i ? s.lineTo(x, y) : s.moveTo(x, y)));
+      s.closePath();
+      s.stroke();
+    });
+  }
+
+  chorusBeasts(t, t0, t1) {
+    // two beasts this time, taking turns to bite
+    const inn = ez(E.outX, (t - t0) / 0.35);
+    const out = 1 - smooth(t1 - 0.1, t1 + 0.3, t);
+    const b = this.au.beat(t);
+    const bite = (n) => -0.05 - 0.36 * Math.exp(-b.phase * 5) * ((b.idx + n) % 2 === 0 ? 1 : 0.15);
+    this.beastAt({ X: 1620, Y: 470 + Math.sin(t * 1.7) * 14, scale: 0.5, z: 0.3, jaw: bite(0), alpha: 0.48 * inn * out });
+    this.beastAt({ X: 300, Y: 520 + Math.sin(t * 1.5 + 1) * 14, scale: 0.45, z: 0.34, jaw: bite(1), alpha: 0.42 * inn * out, flip: true });
+  }
+
+  // ------------------------------------------------------------------------------ gap + outro
+  web(t) {
+    // strings knot themselves into a net (the gap), which becomes the outro's neural network
+    const L = this.L;
+    const g0 = L[34].t1;
+    const g1 = L[35].t0;
+    const grow = smooth(g0, g1 + 0.2, t);
+    const fade = 1 - smooth(L[39].t1 - 0.1, L[39].t1 + 0.4, t);
+    if (fade <= 0) return;
+    const { nodes, edges } = this.net;
+    const b = this.au.beat(t);
+    const nE = Math.floor(edges.length * grow);
+    for (let i = 0; i < edges.length; i++) {
+      const e = edges[i];
+      const appear = i < nE ? 1 : i === nE ? (edges.length * grow) % 1 : 0;
+      if (appear <= 0) continue;
+      const bx = lerp(e.a.x, e.b.x, appear);
+      const by = lerp(e.a.y, e.b.y, appear);
+      this.cast(0, 0.8 * fade, (c) => {
+        c.lineWidth = 2.6;
+        c.beginPath();
+        c.moveTo(e.a.x, e.a.y);
+        c.quadraticCurveTo((e.a.x + bx) / 2, (e.a.y + by) / 2 + e.sag, bx, by);
+        c.stroke();
+      });
+      // a red signal fires along the string on the beat
+      if (t >= g1 && (b.idx + e.j) % 5 === 0 && b.phase < 0.7) {
+        const u = b.phase / 0.7;
+        const sx = lerp(e.a.x, e.b.x, u);
+        const sy = lerp(e.a.y, e.b.y, u) + e.sag * 4 * u * (1 - u) * 0.5;
+        this.leakQ.push((s) => {
+          s.globalAlpha = fade * (1 - u);
+          s.fillStyle = 'rgb(255,70,40)';
+          s.beginPath();
+          s.arc(sx, sy, 6, 0, TAU);
+          s.fill();
+        });
+      }
+    }
+    for (const n of nodes) {
+      const vis = smooth(g0 + (n.k / nodes.length) * (g1 - g0) * 0.9, g0 + (n.k / nodes.length) * (g1 - g0) * 0.9 + 0.2, t);
+      if (vis <= 0) continue;
+      const pulse = n.k % 4 === b.inBar ? Math.exp(-b.phase * 4) : 0;
+      this.cast(0, 0.9 * fade * vis, (c) => {
+        if (n.hang) {
+          c.lineWidth = 2;
+          c.beginPath();
+          c.moveTo(n.x, SC.y0 - 20);
+          c.lineTo(n.x, n.y);
+          c.stroke();
+        }
+        c.beginPath();
+        c.arc(n.x, n.y, 7 + pulse * 6, 0, TAU);
+        c.fill();
+      });
+    }
+  }
+
+  outroBeast(t) {
+    const L = this.L;
+    const inn = ez(E.outX, (t - L[37].t0) / 0.5);
+    const out = 1 - smooth(L[39].t1 - 0.1, L[39].t1 + 0.3, t);
+    const kick = this.au.hit(this.au.kicks, t, 10, 0.3, 0.3);
+    const rise = smooth(L[37].t0, L[39].t1, t);
+    this.beastAt({ X: 1560, Y: 520, scale: 0.5 + 0.08 * rise, z: 0.32, jaw: -0.06 - 0.35 * kick, alpha: (0.38 + 0.2 * rise) * inn * out });
+  }
+
+  ending(t) {
+    // the opening picture returns while the bulb swings wider and wider
+    const L = this.L;
+    const t0 = L[39].t1;
+    const u = t - t0;
+    const inn = clamp(u / 0.4);
+    const b = this.au.beat(t);
+    const jaw = -0.05 - 0.22 * Math.exp(-b.phase * 4) * (b.idx % 2 === 0 ? 1 : 0.4);
+    const z = lerp(0.4, 0.04, ez(E.outC, u / 1.0));
+    this.beastAt({ X: 900, Y: 640, scale: 0.4, z, jaw, alpha: inn });
+    const ca = clamp((u - 0.3) / 0.5);
+    if (ca <= 0) return;
+    const zc = lerp(0.35, 0, ez(E.outC, (u - 0.3) / 0.8));
+    const art = layout(this.s, ARTIST, 'KakuBlack', 58, { tracking: 0.35 });
+    this.castText(art, SC.cx, 168, zc, ca);
+    const tt = layout(this.s, TITLE, 'AntonioBold', 128, { tracking: 0.06 });
+    const p = this.project(SC.cx, 262, zc);
+    this.tintQ.push((s) => {
+      s.globalAlpha = ca * p.a;
+      s.translate(p.x, p.y);
+      s.scale(p.m, p.m);
+      drawGlyphs(s, tt, 0, 0, { fill: 'rgb(220,38,26)' });
+    });
+  }
+
   // ===================================================================================== lyrics
   drawLine(l, t) {
     const d = l.d;
@@ -961,6 +1728,7 @@ export class Theater {
     if (d.layout === 'stairs') return this.drawStairs(l, t, v);
     if (d.layout === 'cards') return this.drawCards(l, t, v);
     if (d.layout === 'tags') return this.drawTags(l, t, v);
+    if (d.layout === 'bubbles') return this.drawBubbles(l, t, v);
     for (const row of l.rows) for (const seg of row.segs) this.drawSeg(l, seg, t, v, dim);
     if (d.enter === 'type' && v === 0) this.caret(l, t);
   }
@@ -1013,6 +1781,8 @@ export class Theater {
         break;
     }
     if (d.jitterZ && u > 0.7) z += rnd(Math.floor(t * 14), seg.r[0], g.i) < 0.12 ? 0.14 : 0;
+    if (d.tangle) rot += Math.sin(t * 2.3 + g.i * 1.7) * 0.09 * smooth(0.3, 2.5, u);
+    if (d.z && u > 0) z = Math.max(z, d.z);
     if (u < 0) a = 0;
     if (v > 0) {
       if (d.exit === 'cut') a = 0;
@@ -1073,10 +1843,29 @@ export class Theater {
         this.projGlyph(seg, g, p, a, t, draw);
       } else if (kind === 'stamp') {
         // handled per segment below
+      } else if (d.multi) {
+        // the main (dim) bulb plus every strobing light throws its own shadow of the glyph
+        const keep = this.lt;
+        this.cast(p.blur, a * p.a * 0.62, (c) => draw(c, '#000'));
+        for (const A of keep.aux) {
+          if (A.I < 0.05) continue;
+          this.lt = A;
+          const pa = this.project(gx, gy, ps.z);
+          this.cast(pa.blur, a * pa.a * 0.5 * Math.min(1, A.I), (c) => {
+            c.translate(pa.x, pa.y);
+            c.scale(pa.m * ps.sc, pa.m * ps.sc);
+            c.font = font;
+            c.textAlign = 'center';
+            c.textBaseline = 'middle';
+            c.fillText(g.ch, 0, 0);
+          });
+        }
+        this.lt = keep;
       } else {
         this.cast(p.blur, a * p.a, (c) => draw(c, '#000'));
       }
     }
+    if (seg.redact) this.redact(l, seg, t, v);
     if (kind === 'proj') this.projFrame(l, seg, t, v);
     if (kind === 'stamp') this.stamp(l, seg, t, v);
     if (seg.tear && t >= l.t0 + seg.at) {
@@ -1084,6 +1873,26 @@ export class Theater {
       const cx = seg.x0 + seg.L.width / 2;
       for (let i = 0; i < 3; i++) this.tear(cx - 120 + i * 120, seg.y0, 560, 1.15, l.t0 + seg.at + 0.03 + i * 0.05, t, 71 + i, fade);
     }
+  }
+
+  redact(l, seg, t, v) {
+    // the rulebook's victory condition gets blacked out in ink
+    const tr = l.t0 + l.rows[1].segs[0].at + 0.55;
+    const e = ez(E.outX, (t - tr) / 0.3);
+    if (e <= 0) return;
+    const w = (seg.L.width + 30) * e;
+    this.paperQ.push((s) => {
+      s.globalCompositeOperation = 'multiply';
+      s.globalAlpha = 0.97 * (1 - v);
+      s.fillStyle = INK;
+      s.beginPath();
+      s.moveTo(seg.x0 - 15, seg.y0 - seg.size * 0.55);
+      s.lineTo(seg.x0 - 15 + w, seg.y0 - seg.size * 0.58);
+      s.lineTo(seg.x0 - 15 + w, seg.y0 + seg.size * 0.55);
+      s.lineTo(seg.x0 - 15, seg.y0 + seg.size * 0.6);
+      s.closePath();
+      s.fill();
+    });
   }
 
   projGlyph(seg, g, p, a, t, draw) {
@@ -1226,8 +2035,9 @@ export class Theater {
       const u = t - (l.t0 + it.seg.at);
       if (u < 0) continue;
       const dir = it.px < SC.cx ? -1 : 1;
-      const th = dir * 1.25 * Math.exp(-u * 2.6) * Math.cos(u * (TAU / 1.25));
-      const len = 380;
+      const fromTop = l.d.fromTop;
+      const th = fromTop ? dir * 0.18 * Math.exp(-u * 2) * Math.sin(u * 8) : dir * 1.25 * Math.exp(-u * 2.6) * Math.cos(u * (TAU / 1.25));
+      const len = fromTop ? lerp(-120, 380, ez(E.outB, u / 0.42, 1.8)) : 380;
       const top = [it.px, SC.y0 - 30];
       const cx = top[0] + Math.sin(th) * len;
       const cy = top[1] + Math.cos(th) * len;
@@ -1267,15 +2077,16 @@ export class Theater {
       const u = t - (l.t0 + it.seg.at);
       if (u < 0) continue;
       const drop = ez(E.outB, u / 0.4, 2.2);
-      const sw = 0.25 * Math.exp(-u * 2.5) * Math.sin(u * 9);
+      const sw = 0.25 * Math.exp(-u * 2.5) * Math.sin(u * 9) + (l.d.net ? 0.06 * Math.sin(t * 2.4 + it.x) : 0);
       const y = lerp(SC.y0 - 120, it.y, drop);
       const C = it.card;
       const p = this.project(it.x, y, 0.05 + v * 0.4);
       const a = clamp(u / 0.08) * (1 - v);
+      const anchorY = l.d.net ? it.y - 72 : SC.y0 - 20;
       this.cast(p.blur, a * p.a, (c) => {
         c.lineWidth = 3;
         c.beginPath();
-        c.moveTo(it.x, SC.y0 - 20);
+        c.moveTo(it.x, anchorY);
         c.lineTo(p.x, p.y - (C.h / 2) * p.m);
         c.stroke();
         c.translate(p.x, p.y);
@@ -1286,6 +2097,101 @@ export class Theater {
     }
   }
 
+
+  // ===================================================================================== poster
+  /** a still for the cover: the paper fills the frame, the beast on the left, the title on the right.
+   *  Everything that matters stays inside the central 4:3 area (x 240..1680) and above y 930. */
+  poster() {
+    const keep = { ...SC };
+    Object.assign(SC, { x0: 36, y0: 36, x1: W - 36, y1: H - 36 });
+    Object.assign(SC, { w: SC.x1 - SC.x0, h: SC.y1 - SC.y0, cx: (SC.x0 + SC.x1) / 2, cy: (SC.y0 + SC.y1) / 2 });
+    try {
+      const k = this.k;
+      const s = this.s;
+      const tex = this.makePaper(k);
+      this.lt = { x: 1210, y: 330, I: 1.08, col: WARM, R: 1450, aux: [] };
+      this.tintQ = [];
+      this.leakQ = [];
+      this.projQ = [];
+      this.inkQ = [];
+      this.paperQ = [];
+      s.setTransform(k, 0, 0, k, 0, 0);
+      s.globalAlpha = 1;
+      s.globalCompositeOperation = 'source-over';
+      this.sh.setTransform(k, 0, 0, k, 0, 0);
+      this.sh.clearRect(0, 0, W, H);
+      for (const [, q] of this.Q) q.clearRect(0, 0, W, H);
+      s.fillStyle = '#030302';
+      s.fillRect(0, 0, W, H);
+      s.save();
+      s.beginPath();
+      s.rect(SC.x0, SC.y0, SC.w, SC.h);
+      s.clip();
+      this.drawPaper(s);
+      this.dust(7.3);
+      // claw tears behind the title, light leaking through
+      for (let i = 0; i < 3; i++) this.tear(1180 + i * 120, 470, 620, 1.1, -10, 0, 91 + i, 0.9);
+      // the beast, mid-bite
+      this.beastAt({ X: 640, Y: 625, scale: 0.4, z: 0.02, jaw: -0.2, alpha: 1 });
+      // artist (shadow cut-out) and title (red cellophane): the only large text is the title
+      const art = layout(s, ARTIST, 'KakuBlack', 64, { tracking: 0.35 });
+      const tx = 1270;
+      this.castText(art, tx, 236, 0, 0.95);
+      const t1 = layout(s, 'KEDAMONO', 'AntonioBold', 164, { tracking: 0.03 });
+      const t2 = layout(s, '_AYAKASHI', 'AntonioBold', 164, { tracking: 0.03 });
+      for (const [Lay, y] of [[t1, 395], [t2, 585]]) {
+        this.tintQ.push((c) => drawGlyphs(c, Lay, tx, y, { fill: 'rgb(214,34,22)' }));
+        this.cast(20, 0.25, (c) => drawGlyphs(c, Lay, tx + 10, y + 12, { fill: '#000' }));
+      }
+      // a red stamp + typewriter label
+      const stampL = layout(s, '中日双语歌词', 'SCBold', 44, { tracking: 0.08 });
+      this.paperQ.push((c) => {
+        c.globalCompositeOperation = 'multiply';
+        c.translate(1112, 772);
+        c.rotate(-0.07);
+        c.strokeStyle = 'rgb(196,22,16)';
+        c.lineWidth = 5;
+        c.beginPath();
+        c.roundRect(-stampL.width / 2 - 26, -42, stampL.width + 52, 84, 10);
+        c.stroke();
+        drawGlyphs(c, stampL, 0, 2, { fill: 'rgb(196,22,16)' });
+      });
+      const lv = layout(s, 'LYRIC VIDEO', 'Courier', 40, { tracking: 0.12 });
+      this.castText(lv, 1432, 774, 0, 0.9);
+      for (const fn of this.paperQ) {
+        s.save();
+        fn(s);
+        s.restore();
+      }
+      this.compositeShadows(s);
+      for (const [q, op] of [[this.tintQ, 'multiply'], [this.leakQ, 'lighter']]) {
+        for (const fn of q) {
+          s.save();
+          s.globalCompositeOperation = op;
+          fn(s);
+          s.restore();
+        }
+      }
+      s.globalCompositeOperation = 'overlay';
+      s.globalAlpha = 0.55;
+      s.drawImage(tex, 0, 0, W, H);
+      s.globalAlpha = 1;
+      s.globalCompositeOperation = 'source-over';
+      s.restore();
+      this.bloom(s);
+      s.save();
+      s.globalCompositeOperation = 'overlay';
+      s.globalAlpha = 0.08;
+      s.fillStyle = this.noisePat[3];
+      s.fillRect(0, 0, W, H);
+      s.restore();
+      s.drawImage(this.vignette, 0, 0, W, H);
+      return this.S;
+    } finally {
+      Object.assign(SC, keep);
+    }
+  }
+
   // ===================================================================================== overlay
   drawSubs(o, t) {
     const live = this.subs
@@ -1293,6 +2199,21 @@ export class Theater {
       .filter((x) => x.a > 0.01)
       .sort((p, q) => p.l.t0 - q.l.t0);
     const ys = live.length > 1 ? [948, 1008] : [980];
+    const ec = smooth(this.L[39].t1 + 0.3, this.L[39].t1 + 1.0, t) * (1 - smooth(FINAL_HIT + 0.05, FINAL_HIT + 0.5, t));
+    if (ec > 0.01 && !live.length) {
+      o.font = '40px KakuBlack';
+      const aw = o.measureText(ARTIST).width + 4 * 6;
+      o.font = '44px AntonioBold';
+      const tw = o.measureText(TITLE).width + 6 * 16;
+      const x0 = W / 2 - (aw + 60 + tw) / 2;
+      text(o, ARTIST, x0, 982, 'KakuBlack', 40, '#efe4cf', { alpha: ec, tracking: 6 });
+      o.save();
+      o.globalAlpha = ec;
+      o.fillStyle = COL.redHot;
+      o.fillRect(x0 + aw + 28, 962, 3, 40);
+      o.restore();
+      text(o, TITLE, x0 + aw + 60, 984, 'AntonioBold', 44, '#efe4cf', { alpha: ec, tracking: 6 });
+    }
     live.slice(-2).forEach(({ l, a }, i, arr) => {
       const dimmed = arr.length > 1 && i === 0 ? 0.55 : 1;
       text(o, l.cn, W / 2, ys[i], 'SerifSCSemi', 42, '#efe4cf', { align: 'center', alpha: a * dimmed, tracking: 2 });

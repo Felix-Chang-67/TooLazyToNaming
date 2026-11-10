@@ -35,6 +35,18 @@ hs = ndi.sum(np.ones_like(hl), hl, index=np.arange(1, hn + 1))
 small = np.isin(hl, np.where(hs < 2500)[0] + 1)
 m |= small
 print('holes kept:', [int(s) for s in hs if s >= 2500])
+# the rim light at the ear tip is dashed, which leaves notches in the outline: close them locally
+# (computed on a larger, edge-padded window so the window border itself is not eroded)
+oy0, oy1, ox0, ox1 = 260, 470, 1000, 1400
+iy0, iy1, ix0, ix1 = 300, 430, 1040, 1360
+r = 25
+yy, xx = np.ogrid[-r:r + 1, -r:r + 1]
+disk = (xx * xx + yy * yy) <= r * r
+sub = np.pad(m[oy0:oy1, ox0:ox1], r + 5, mode='edge')
+closed = ndi.binary_closing(sub, structure=disk)[r + 5:-(r + 5), r + 5:-(r + 5)]
+m[iy0:iy1, ix0:ix1] = closed[iy0 - oy0:iy1 - oy0, ix0 - ox0:ix1 - ox0]
+# smooth the grainy (stippled) contour
+m = ndi.gaussian_filter(m.astype(np.float32), 2.5) > 0.5
 # anti-aliased alpha
 alpha = ndi.gaussian_filter(m.astype(np.float32), 1.2)
 alpha = np.clip((alpha - 0.5) * 2.2 + 0.5, 0, 1)

@@ -37,9 +37,13 @@ export function parseLrc(src) {
   let open = false;
   for (const l of lines) {
     l.cn = l.cn.replace(/"/g, () => ((open = !open) ? '“' : '”'));
+    for (const [from, to] of CN_FIXES) l.cn = l.cn.split(from).join(to);
   }
   return lines.map((l, i) => ({ ...l, i }));
 }
+
+/** corrections to the Chinese translation requested after the LRC was delivered */
+export const CN_FIXES = [['OS不兼容', '操作系统不兼容']];
 
 const B2 = 2 * SPB; // chanted words land every two beats
 /** time of beat n relative to a line starting at t0 */

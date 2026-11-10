@@ -7,6 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+DESIGN=${DESIGN:-theater} # theater (影絵劇場) | classic (the first, glitch/HUD version)
 SCALE=${SCALE:-2}
 FPS=${FPS:-60}
 JOBS=${JOBS:-3}
@@ -17,12 +18,16 @@ WAV=materials/KEDAMONO_AYAKASHI_24bit_48kHz.wav
 RES=$((1080 * SCALE))p
 ((SCALE == 2)) && RES=4K
 OUT=${OUT:-output/KEDAMONO_AYAKASHI_lyric_video_${RES}${FPS}.mov}
+if [[ "$DESIGN" == theater && ! -s assets/derived/beast_head.png ]]; then
+  mkdir -p assets/derived
+  python3 -I scripts/extract_beast.py materials/KEDAMONO_AYAKASHI-Cover.jpg assets/derived
+fi
 
 mkdir -p build output
 [[ -s build/analysis.json ]] || python3 -I src/analyze_audio.py "$WAV" build/analysis.json "$FPS"
 TOTAL=$(python3 -I -c "import json,sys; print(json.load(open(sys.argv[1]))['frames'])" build/analysis.json)
 CHUNK=$(((TOTAL + JOBS - 1) / JOBS))
-echo "frames=$TOTAL scale=$SCALE jobs=$JOBS chunk=$CHUNK crf=$CRF preset=$PRESET -> $OUT"
+echo "design=$DESIGN frames=$TOTAL scale=$SCALE jobs=$JOBS chunk=$CHUNK crf=$CRF preset=$PRESET -> $OUT"
 
 pids=()
 : >build/segments.txt
@@ -31,7 +36,7 @@ for ((j = 0; j < JOBS; j++)); do
   to=$(((j + 1) * CHUNK))
   ((to > TOTAL)) && to=$TOTAL
   echo "file 'seg_$j.mkv'" >>build/segments.txt
-  node src/render.mjs --scale "$SCALE" --from "$from" --to "$to" --fps "$FPS" --crf "$CRF" --preset "$PRESET" \
+  node src/render.mjs --design "$DESIGN" --scale "$SCALE" --from "$from" --to "$to" --fps "$FPS" --crf "$CRF" --preset "$PRESET" \
     --threads "$THREADS" --out "build/seg_$j.mkv" >"build/seg_$j.log" 2>&1 &
   pids+=($!)
 done
